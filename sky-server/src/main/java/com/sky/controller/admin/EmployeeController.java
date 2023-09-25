@@ -38,12 +38,12 @@ public class EmployeeController {
      * @return
      */
     @PostMapping("/login")
-    public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
+    public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {  // 参数employeeLoginDTO是登录请求的请求体
         log.info("员工登录：{}", employeeLoginDTO);
 
         Employee employee = employeeService.login(employeeLoginDTO);
 
-        //登录成功后，生成jwt令牌
+        // 登录成功后，生成jwt令牌。jwt令牌有什么用?JWT（JSON Web Token）是一种基于 JSON 格式的轻量级令牌（token）协议，它被广泛应用于网络应用程序的身份验证和授权。
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.EMP_ID, employee.getId());
         String token = JwtUtil.createJWT(
@@ -51,14 +51,14 @@ public class EmployeeController {
                 jwtProperties.getAdminTtl(),
                 claims);
 
-        EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()
+        EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()  // 这种链式编程构建对象并属性赋值的写法，的前提是EmployeeLoginVO类上要加上注解@Builder
                 .id(employee.getId())
                 .userName(employee.getUsername())
                 .name(employee.getName())
                 .token(token)
                 .build();
 
-        return Result.success(employeeLoginVO);
+        return Result.success(employeeLoginVO);  // 这也是链式编程属性赋值，这是登录请求的返回响应体
     }
 
     /**
