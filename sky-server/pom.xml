@@ -81,7 +81,7 @@
             <artifactId>aspectjweaver</artifactId>
         </dependency>
 
-        <dependency>
+        <dependency><!--接口的文档在线自动生成，降低后端开发人员编写接口文档的负担-->
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-spring-boot-starter</artifactId>
         </dependency>

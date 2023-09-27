@@ -1,7 +1,10 @@
 package com.sky.service.impl;
 
 import com.sky.constant.MessageConstant;
+import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
+import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
@@ -9,9 +12,14 @@ import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.service.EmployeeService;
+import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+
+import java.sql.Time;
+import java.time.LocalDateTime;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -53,6 +61,30 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         //3、返回实体对象
         return employee;
+    }
+
+    /**
+     * 新增员工-业务逻辑层方法
+     * @param employeeDTO
+     */
+    public void save(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        // 对象属性拷贝
+        BeanUtils.copyProperties(employeeDTO, employee);
+        // 设置该员工的登录状态
+        employee.setStatus(StatusConstant.ENABLE);
+        // 设置型新员工的密码
+        employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
+        // 设置当前员工记录创建时间和修改时间
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+        // 设置是谁（就是当前登录的管理员）创建和修改的该员工
+
+
+        employee.setCreateUser(BaseContext.getCurrentId());  // TODO 后期需要修改记录创建人的id，
+        employee.setUpdateUser(BaseContext.getCurrentId());  // 想要实现这个就需要了解前端和后端交互过程中的jwt认证相关知识，后端可以从前端穿过来的token中提取用户id
+        // 调用持久层方法
+        employeeMapper.insert(employee);
     }
 
 }

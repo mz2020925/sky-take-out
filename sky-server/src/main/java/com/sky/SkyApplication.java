@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class SkyApplication {
     public static void main(String[] args) {
         SpringApplication.run(SkyApplication.class, args);
-        log.info("server started");
+        log.info("sky-server 启动了!!!");
+        // TODO 前后端联调测试接口 http://localhost:80
     }
 }
