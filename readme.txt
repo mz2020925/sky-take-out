@@ -18,7 +18,7 @@
 | Entity | 实体，通常和数据库中的表对应                 |
 | DTO    | 数据传输对象，通常用于程序中各层之间传递数据 |
 | VO     | 视图对象，为前端展示数据提供的对象           |
-| POJO   | 普通Java对象，只有属性和对应的getter和setter |
+| POJO   | 普通Java对象，只有属性和对应的getter和setter，本工程中被细分为Entity，DTO，VO |
 
 分析sky-server模块的每个包的作用：
 | config         | 存放配置类       |
@@ -27,3 +27,11 @@
 | mapper         | 存放mapper接口   |
 | service        | 存放service类    |
 | SkyApplication | 启动类           |
+
+"MVC模式"，"三层架构"是对"MVC模式"的衍生出的一种思想。
+
+"三层架构"就是"数据访问层mapper" -> "业务逻辑层service" -> "表现层controller"。
+"MVC模式"就是          "模型Model"                 ，"控制器Controller" | "视图View"。
+
+"模型" 支撑着 "数据访问层mapper" 和 "业务逻辑层service"。
+"控制器Controller" 和 "视图View" 支撑着 "表现层controller"。
