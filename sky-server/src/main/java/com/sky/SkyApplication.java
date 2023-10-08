@@ -12,6 +12,7 @@ public class SkyApplication {
     public static void main(String[] args) {
         SpringApplication.run(SkyApplication.class, args);
         log.info("sky-server 启动了!!!");
-        // TODO 前后端联调测试接口 http://localhost:80
+        // T前后端联调测试接口 http://localhost:80
+        // 后端接口自己测试访问Swagger http://localhost:8080/doc.html
     }
 }
