@@ -18,6 +18,7 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -106,4 +107,13 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         // 将我们自己的转换器放入spring MVC框架的容器中
         converters.add(0, converter);
     }
+
+    /**
+     * 解决druid 日志报错：discard long time none received connection:xxx
+     * */
+//    @PostConstruct
+//    public void setProperties(){
+//        System.setProperty("druid.mysql.usePingMethod","false");
+//    }
+
 }

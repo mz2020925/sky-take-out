@@ -12,6 +12,7 @@ public interface EmployeeMapper {
 
     /**
      * 根据用户名查询员工
+     * 只需要用到数据库表的账号列，所以只需要一个变量即可
      * @param username
      * @return
      */
@@ -20,6 +21,7 @@ public interface EmployeeMapper {
 
     /**
      * 插入员工数据
+     * 需要用到数据库表的所有列，所以要用entity对象
      * @param employee
      */
     @Insert("insert into employee " +
@@ -31,8 +33,15 @@ public interface EmployeeMapper {
     /**
      * 分页查询
      * 此处使用 mybatis 的分页插件 PageHelper 来简化分页代码的开发。底层基于 mybatis 的拦截器实现。
+     * 需要用到数据库表的name（昵称）列，但是前端传给后端请求的时候，还需要传递第几页开始，一页有几条数据
      * @param employeePageQueryDTO
      * @return
      */
     Page<Employee> pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
+
+    /**
+     * 启用禁用员工账号，其实就是根据id修改员工的status属性
+     * @param employee
+     */
+    void update(Employee employee);
 }

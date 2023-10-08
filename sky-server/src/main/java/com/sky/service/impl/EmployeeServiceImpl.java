@@ -91,13 +91,32 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeMapper.insert(employee);
     }
 
-
+    /**
+     * 员工管理的分页查询
+     * @param employeePageQueryDTO
+     * @return
+     */
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
-        PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
-        Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
+        PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());  // 这行代码对后面有什么用呢？
+        // MyBatis提供了一个插件pagehelper，这个插件底层是基于MyBatis的拦截器来编写的，说白了就是我们这个方法中用的mapper代理开发中的SQL语句都会被pagehelper处理，
+        // 分页查询的SQL代码中没有加上 "limit 0,10" ，是因为上面那句代码就告诉了pagehelper插件，你后面在处理SQL代码的时候都追加上"limit getPage(),getPageSize()"
+
+        Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);  // pagehelper这个插件要求查询的数据返回放在Page<>中，它继承了ArrayList
         return new PageResult(page.getTotal(), page.getResult());
     }
 
+    /**
+     * 启用禁用员工账号
+     * @param status
+     * @param id
+     */
+    public void startOrStop(Integer status, long id) {
+        Employee employee = Employee.builder()
+                .id(id)
+                .status(status)
+                .build();
+        employeeMapper.update(employee);
+    }
 }
 
 

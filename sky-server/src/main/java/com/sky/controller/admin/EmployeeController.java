@@ -83,7 +83,7 @@ public class EmployeeController {
      */
     @PostMapping  // Restful风格前面已经有接口路径了，@RequestMapping("/admin/employee")
     @ApiOperation(value = "新增员工接口")
-    public Result save(@RequestBody EmployeeDTO employeeDTO){  // TODO 这个Result的泛型类的用法是什么。这里没有指定泛型的类型也可以吗
+    public Result<String> save(@RequestBody EmployeeDTO employeeDTO){  // TODO 这个Result的泛型类的用法是什么。这里没有指定泛型的类型也可以吗
         log.info("新增员工：{}", employeeDTO);
         employeeService.save(employeeDTO);
         return Result.success();  // TODO 为啥就直接返回success呢？，不一定写入数据库会成功吧
@@ -100,5 +100,16 @@ public class EmployeeController {
         log.info("分页查询：{}", employeePageQueryDTO);
         PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);  // DTO是用于前端传递给后端的数据的，所以是DTO
         return Result.success(pageResult);  // 把业务逻辑层返回的数据封装到统一的Result中，然后再返回给前端
+    }
+
+    /**
+     * 启用、禁用员工账号
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用、禁用员工账号")
+    public Result<String> startOrStop(@PathVariable Integer status, long id){
+        log.info("启用禁用：{}，员工账号：{}",status,id);
+        employeeService.startOrStop(status, id);
+        return Result.success();
     }
 }
