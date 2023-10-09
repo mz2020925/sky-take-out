@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 捕获SQL异常 - 用户名存入数据库重复了
+     * 捕获SQL异常 - 账号(username)存入数据库重复了
      * @param ex
      * @return
      */

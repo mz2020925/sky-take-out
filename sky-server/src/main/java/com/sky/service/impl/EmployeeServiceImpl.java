@@ -16,13 +16,11 @@ import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
-import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
 
 @Service
@@ -115,6 +113,33 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .id(id)
                 .status(status)
                 .build();
+        employeeMapper.update(employee);
+    }
+
+    /**
+     * 根据id查询员工
+     * @param id
+     * @return
+     */
+    public Employee getById(long id) {
+        Employee employee = employeeMapper.getById(id);
+        employee.setPassword("******");
+        return employee;
+    }
+
+    /**
+     * 根据id修改员工信息
+     * 这里和方法startOrStop中共用一套dao代码，即方法employeeMapper.update(employee)
+     * @param employeeDTO
+     * @return
+     */
+    public void update(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+        // 设置修改人(的id)和修改时间
+        employee.setUpdateUser(BaseContext.getCurrentId());
+        employee.setUpdateTime(LocalDateTime.now());
+
         employeeMapper.update(employee);
     }
 }
