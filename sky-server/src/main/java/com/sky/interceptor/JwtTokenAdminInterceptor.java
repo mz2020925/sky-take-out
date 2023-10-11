@@ -25,7 +25,9 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
 
     /**
      * 校验jwt
-     *
+     * 注意：这个方法执行时间在请求到达Controller方法之前，也就是说所有“请求Controller”的请求都会被这个方法拦截。
+     * 但是登录操作，访问登录的Controller方法并没有被拦截，为什么呢？
+     * 在通过SWagger测试的时候，如果不先登录获取一个token（它是一个存储着jwt令牌的变量）然后把它放到请求头中，也是会响应401的
      * @param request
      * @param response
      * @param handler
@@ -36,24 +38,27 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
         // System.out.println("当前线程id："+Thread.currentThread().getId());  // 获取当前线程的id
         //判断当前拦截到的是Controller的方法还是其他资源
         if (!(handler instanceof HandlerMethod)) {
-            //当前拦截到的不是动态方法，直接放行
+            //当前拦截到的不是动态方法,就是Controller方法，直接放行
             return true;
         }
 
+        // TODO 这个jwt拦截器什么时候起作用？登录的时候请求头中并没有jwt令牌啊
         //1、从请求头中获取令牌
         String token = request.getHeader(jwtProperties.getAdminTokenName());
 
         //2、校验令牌
         try {
             log.info("jwt校验: {}", token);
-            Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
+            Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);  // 有了getAdminSecretKey()密钥才能解析token（这个变量里面存放着jwt令牌）
+            // claims是一个HashMap<String, Object>，存了一个键值对(JwtClaimsConstant.EMP_ID, employee.getId())
             Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
             BaseContext.setCurrentId(empId);
-            log.info("当前员工id: {}", empId);
             //3、通过，放行
             return true;
         } catch (Exception ex) {
             //4、不通过，响应401状态码
+            log.error("jwt校验异常：{}", ex.toString());
+
             response.setStatus(401);
             return false;
         }

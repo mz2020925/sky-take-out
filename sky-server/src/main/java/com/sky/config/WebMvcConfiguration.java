@@ -1,5 +1,7 @@
 package com.sky.config;
 
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.sky.interceptor.JwtTokenAdminInterceptor;
 import com.sky.json.JacksonObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +48,8 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     /**
      * 通过knife4j生成接口文档
      * 下面是在本配置类中加入knife4j相关配置
+     * 这个就是使用Swagger需要的配置类
+     *
      * @return
      */
     @Bean
@@ -68,6 +72,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     /**
      * 设置静态资源映射
      * 这些静态资源就是后端自己测试访问到的接口文档页面
+     *
      * @param registry
      */
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -85,20 +90,21 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      * 其实就是我们现在使用的是Spring MVC框架，这个框架本身有一个消息转换器，下载我们要扩展这个消息转换器，从而使它能够将返回的响应消息中的时间格式转换正确。
      * 什么是转换正确，就是后端返回给前端的json文本中时间格式应该是
      * "createTime": [
-     *      2023-09-27 11:40:27
+     * 2023-09-27 11:40:27
      * ],
      * 而不是
      * "createTime": [
-     *      2023,
-     *      9,
-     *      26,
-     *      15,
-     *      9,
-     *      30
+     * 2023,
+     * 9,
+     * 26,
+     * 15,
+     * 9,
+     * 30
      * ],
+     *
      * @param converters
      */
-    protected void extendMessageConverters(List<HttpMessageConverter<?>> converters){
+    protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         log.info("开始扩展消息转换器");
         // 创建一个消息转换器对象
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
@@ -110,10 +116,27 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     /**
      * 解决druid 日志报错：discard long time none received connection:xxx
-     * */
-//    @PostConstruct
-//    public void setProperties(){
-//        System.setProperty("druid.mysql.usePingMethod","false");
-//    }
+     * 另一种解决方法是在-VM options 里面加上 -Ddruid.mysql.usePingMethod=false
+     */
+    // @PostConstruct
+    // public void setProperties() {
+    //     System.setProperty("druid.mysql.usePingMethod", "false");
+    // }
+
+    /**
+     * MyBatis-Plus要求你添加一个分页拦截器（PaginationInterceptor），这是因为分页查询涉及到对SQL语句的修改和重写，以实现正确的分页效果。
+     * 分页拦截器是MyBatis-Plus提供的一个组件，它会拦截执行的SQL语句，并根据指定的分页参数，修改SQL语句以获取指定范围的数据。
+     * 这个拦截器的作用和MyBatis的PageHelper插件一样。
+     *
+     * @return
+     */
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        //1 创建MybatisPlusInterceptor拦截器对象
+        MybatisPlusInterceptor mpInterceptor = new MybatisPlusInterceptor();
+        //2 添加分页拦截器
+        mpInterceptor.addInnerInterceptor(new PaginationInnerInterceptor());
+        return mpInterceptor;
+    }
 
 }

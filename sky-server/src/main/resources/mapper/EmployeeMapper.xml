@@ -9,7 +9,7 @@
                 name like concat('%',#{name},'%')
             </if>
         </where>
-        order by create_time desc
+        order by update_time desc
     </select>
     <!--这里不需要自己去写limit 0,10了，因为MyBatis的pagehelper插件帮我们完成了-->
     <!--desc 表示降序排列 -->
