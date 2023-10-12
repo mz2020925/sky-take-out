@@ -35,19 +35,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public Result exceptionHandler(SQLIntegrityConstraintViolationException ex){
         String message = ex.getMessage();
-        System.out.println(ex.getMessage());
-        System.out.println(ex.toString());
         if(message.contains("Duplicate entry")){
             // String[] strings = message.split(" ");
             // String duplicateUsername = strings[2];
-            String msg = message;
-            if (message.contains("idx_category_name")){
-                msg = MessageConstant.CATEGORY_NAME_DUPLICATE;
-
-            }else if(message.contains("idx_username")){
-                msg = MessageConstant.ACCOUNT_ALREADY_EXISTS;
-            }
-            return Result.error(msg);
+            // String msg = message;
+            // if (message.contains("idx_category_name")){
+            //     msg = MessageConstant.CATEGORY_NAME_DUPLICATE;
+            //
+            // }else if(message.contains("idx_username")){
+            //     msg = MessageConstant.ACCOUNT_ALREADY_EXISTS;
+            // }
+            return Result.error("重复添加");
         }else {
             return Result.error(MessageConstant.UNKNOWN_ERROR);
         }

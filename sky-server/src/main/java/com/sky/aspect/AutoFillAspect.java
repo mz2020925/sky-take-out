@@ -23,6 +23,7 @@ public class AutoFillAspect {
     /**
      * 切入点
      */
+    // TODO 这个AOP对DishMapper没有起作用
     @Pointcut("execution(* com.sky.mapper.*.*(..)) && @annotation(com.sky.annotation.AutoFill)")
     public void autoFillPointCut(){}
 
@@ -51,7 +52,7 @@ public class AutoFillAspect {
         }
 
         // 如果上面没有return，则进行下面的操作
-        Object entity = args[0];  // entity应该是Employee对象合作和Category对象
+        Object entity = args[0];  // 被拦截方法的参数数组的第0元素entity，应该就是Employee对象、Category对象等等...
 
         // 准备待会赋值给变量的数据
         LocalDateTime now = LocalDateTime.now();

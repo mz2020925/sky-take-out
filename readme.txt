@@ -15,9 +15,9 @@
 | utils       | 常用工具类                     |
 
 分析sky-pojo模块的每个包的作用：
-| Entity | 实体，通常和数据库中的表对应                 |
-| DTO    | 数据传输对象，通常用于程序中各层之间传递数据 |
-| VO     | 视图对象，为前端展示数据提供的对象           |
+| Entity | 实体，通常和数据库中的表对应，service层给dao层传递数据的载体  |
+| DTO    | 数据传输对象，通常用于程序中各层之间传递数据，前端给后端controller的传数据的载体，放到请求体中 |
+| VO     | 视图对象，为前端展示数据提供的对象，后端controller给前端返回数据的载体，放到Result的data属性中  |
 | POJO   | 普通Java对象，只有属性和对应的getter和setter，本工程中被细分为Entity，DTO，VO |
 
 分析sky-server模块的每个包的作用：

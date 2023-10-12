@@ -87,7 +87,7 @@ public class EmployeeController {
     public Result<String> save(@RequestBody EmployeeDTO employeeDTO){  // TODO 这个Result的泛型类的用法是什么。这里没有指定泛型的类型也可以吗
         log.info("新增员工：{}", employeeDTO);
         employeeService.save(employeeDTO);
-        return Result.success();  // TODO 为啥就直接返回success呢？，不一定写入数据库会成功吧
+        return Result.success();  // TODO 为啥就直接返回success呢？，不一定写入数据库会成功吧，不成功的情况一定是抛出异常，而异常一定会被捕获处理
     }
 
     /**
@@ -133,9 +133,9 @@ public class EmployeeController {
      */
     @PutMapping
     @ApiOperation("根据id修改员工信息")
-    public Result<String> update(@RequestBody EmployeeDTO employeeDTO){
+    public Result<String> updateById(@RequestBody EmployeeDTO employeeDTO){
         log.info("根据id修改员工信息：{}", employeeDTO);
-        employeeService.update(employeeDTO);
+        employeeService.updateById(employeeDTO);
         return Result.success();
     }
 

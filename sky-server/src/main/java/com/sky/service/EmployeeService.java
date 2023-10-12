@@ -48,7 +48,7 @@ public interface EmployeeService {
      * @param employeeDTO
      * @return
      */
-    void update(EmployeeDTO employeeDTO);
+    void updateById(EmployeeDTO employeeDTO);
 
     /**
      * 修改当前登录员工的密码

@@ -26,6 +26,7 @@ public interface EmployeeMapper {
      * 需要用到数据库表的所有列，所以要用entity对象
      * @param employee
      */
+    // TODO 把公共字段赋值的AOP操作中的@AutoFill加在Controller方法上，因为MyBatisplus将没有Mapper和service的增删改查的实现
     @AutoFill(value = OperationType.INSERT)
     @Insert("insert into employee " +
             "(name, username, password, phone, sex, id_number, create_time, update_time, create_user, update_user) " +
@@ -46,8 +47,8 @@ public interface EmployeeMapper {
      * 启用禁用员工账号，其实就是根据id修改员工的status属性
      * @param employee
      */
-    @AutoFill(value=OperationType.UPDATE)
-    void update(Employee employee);
+    @AutoFill(value = OperationType.UPDATE)
+    void updateById(Employee employee);
 
     /**
      * 根据id查询员工
