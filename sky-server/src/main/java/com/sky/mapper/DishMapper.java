@@ -1,6 +1,5 @@
 package com.sky.mapper;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sky.annotation.AutoFill;
 import com.sky.entity.Dish;

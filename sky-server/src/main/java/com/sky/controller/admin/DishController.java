@@ -17,7 +17,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -32,30 +31,28 @@ public class DishController {
 
     /**
      * 新增菜品
-     *
      * @param dishDTO
      */
     @PostMapping
     @ApiOperation("新增菜品")
     public Result<String> save(@RequestBody DishDTO dishDTO) {
         log.info("新增菜品：{}", dishDTO);
-        Dish dish = new Dish();
-        BeanUtils.copyProperties(dishDTO, dish);
-        dishService.save(dish);
+        // 新增菜品及后续操作
+        dishService.saveWithFlavor(dishDTO);
         return Result.success();
     }
 
     /**
      * 批量删除菜品
-     *
      * @param ids
      * @return
      */
     @DeleteMapping
     @ApiOperation("批量删除菜品")
-    public Result<String> deleteByIds(String ids) {
+    public Result<String> deleteByIds(@RequestParam List<Long> ids) {
         log.info("批量删除菜品：{}", ids);
-        dishService.removeByIds(Arrays.asList(ids.split(",").clone()));
+        // 判断当前菜品是否能够删除---是否存在起售中的菜品？？
+        dishService.deleteByIds(ids);
         return Result.success();
     }
 
@@ -92,12 +89,10 @@ public class DishController {
      */
     @GetMapping("/{id}")
     @ApiOperation("根据id查询菜品")
-    public Result<DishVO> selectById(@PathVariable Long id) {
+    public Result<DishVO> getById(@PathVariable Long id) {
         log.info("根据id查询菜品：{}", id);
-        Dish dish = dishService.getById(id);
         DishVO dishVO = new DishVO();
-        BeanUtils.copyProperties(dish, dishVO);
-
+        BeanUtils.copyProperties(dishService.getById(id), dishVO);
         return Result.success(dishVO);
     }
 

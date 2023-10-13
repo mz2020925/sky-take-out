@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.sky.interceptor.JwtTokenAdminInterceptor;
 import com.sky.json.JacksonObjectMapper;
+import com.sky.properties.MinIoProperties;
+import io.minio.MinioClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +22,6 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -32,6 +33,9 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     @Autowired
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
+
+    @Autowired
+    private MinIoProperties minIoProperties;
 
     /**
      * 注册自定义拦截器
@@ -137,6 +141,19 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         //2 添加分页拦截器
         mpInterceptor.addInnerInterceptor(new PaginationInnerInterceptor());
         return mpInterceptor;
+    }
+
+    /**
+     * 本项目中使用一项技术 MinIO ，来搭建 存储服务器
+     * 本函数返回 存储服务器 的一个Client连接。就类似于建立 MySQL 的一个连接一样。
+     * @return
+     */
+    @Bean
+    public MinioClient minioClient() {
+        return MinioClient.builder()
+                .endpoint(minIoProperties.getEndpoint())
+                .credentials(minIoProperties.getAccessKey(), minIoProperties.getSecretKey())
+                .build();
     }
 
 }

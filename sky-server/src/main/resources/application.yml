@@ -12,6 +12,11 @@ spring:
       url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: ${sky.datasource.username}
       password: ${sky.datasource.password}
+  servlet:
+    multipart:
+      maxFileSize: 10MB
+      maxRequestSize: 10MB
+
 
 
 mybatis:
@@ -46,3 +51,10 @@ sky:
     admin-ttl: 604800000  # 单位ms，时间一周
     # 设置前端传递过来的令牌名称
     admin-token-name: token
+
+minio:
+  endpoint: ${sky.miniodev.endpoint}
+  bucketName: ${sky.miniodev.bucketName}
+  accessKey: ${sky.miniodev.accessKey}
+  secretKey: ${sky.miniodev.secretKey}
+

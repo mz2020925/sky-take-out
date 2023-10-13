@@ -6,3 +6,8 @@ sky:
     database: sky_take_out
     username: zmz
     password: Root_1234
+  miniodev:
+    endpoint: http://192.168.101.67:9000 #Minio服务所在地址，可视化界面端口是9090
+    bucketName: images #存储桶名称
+    accessKey: minioadmin #访问的key
+    secretKey: minioadmin #访问的秘钥
