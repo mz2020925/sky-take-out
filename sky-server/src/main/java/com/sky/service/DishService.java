@@ -13,11 +13,11 @@ public interface DishService extends IService<Dish> {
 
     void deleteByIds(List<Long> ids);
 
+    void update(DishDTO dishDTO);
+
+
+    PageResult getByPage(DishPageQueryDTO dishPageQueryDTO);
+
     void startOrStop(Integer status, Long id);
 
-    void update(DishDTO categoryDTO);
-
-    List getByType(Integer type);
-
-    PageResult getByPage(DishPageQueryDTO categoryPageQueryDTO);
 }

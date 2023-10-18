@@ -1,15 +1,13 @@
 package com.sky.vo;
 
-import com.sky.entity.DishFlavor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Builder
@@ -35,7 +33,7 @@ public class DishVO implements Serializable {
     //分类名称
     private String categoryName;
     //菜品关联的口味
-    private List<DishFlavor> flavors = new ArrayList<>();
+    // private List<DishFlavor> flavors = new ArrayList<>();
 
     //private Integer copies;
 }

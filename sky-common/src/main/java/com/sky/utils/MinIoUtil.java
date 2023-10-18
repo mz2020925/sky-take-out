@@ -44,9 +44,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class MinIoUtil {
-
     @Resource
     private MinIoProperties minIoProperties;
+
     @Resource
     private MinioClient minioClient;
 

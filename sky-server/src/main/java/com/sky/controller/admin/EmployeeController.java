@@ -87,7 +87,7 @@ public class EmployeeController {
     public Result<String> save(@RequestBody EmployeeDTO employeeDTO){  // TODO 这个Result的泛型类的用法是什么。这里没有指定泛型的类型也可以吗
         log.info("新增员工：{}", employeeDTO);
         employeeService.save(employeeDTO);
-        return Result.success();  // TODO 为啥就直接返回success呢？，不一定写入数据库会成功吧，不成功的情况一定是抛出异常，而异常一定会被捕获处理
+        return Result.success();
     }
 
     /**
@@ -97,9 +97,9 @@ public class EmployeeController {
      */
     @GetMapping("/page")
     @ApiOperation("员工分页查询")
-    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){
+    public Result<PageResult> getByPage(EmployeePageQueryDTO employeePageQueryDTO){
         log.info("分页查询：{}", employeePageQueryDTO);
-        PageResult data = employeeService.pageQuery(employeePageQueryDTO);  // DTO是用于前端传递给后端的数据的，所以是DTO
+        PageResult data = employeeService.getByPage(employeePageQueryDTO);  // DTO是用于前端传递给后端的数据的，所以是DTO
         return Result.success(data);  // 把业务逻辑层返回的数据封装到统一的Result中，然后再返回给前端
     }
 

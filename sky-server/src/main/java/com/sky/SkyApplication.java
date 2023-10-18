@@ -14,7 +14,7 @@ public class SkyApplication {
         SpringApplication.run(SkyApplication.class, args);
         log.info("sky-server 启动了!!!");
         // 后端开发指导：https://yapi.pro/group/121400
-        // T前后端联调测试接口 http://localhost:80
+        // 前后端联调测试接口 http://localhost:80
         // 后端接口自己测试访问Swagger http://localhost:8080/doc.html
     }
 }

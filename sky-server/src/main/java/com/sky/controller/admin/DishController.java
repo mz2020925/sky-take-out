@@ -63,11 +63,7 @@ public class DishController {
     @ApiOperation("菜品起售、停售")
     public Result<String> startOrStop(@PathVariable Integer status, Long id) {
         log.info("菜品起售停售：{}，菜品id{}", status, id);
-        Dish dish = Dish.builder()
-                .status(status)
-                .id(id)
-                .build();
-        dishService.updateById(dish);
+        dishService.startOrStop(status, id);
         return Result.success();
     }
 
@@ -78,9 +74,7 @@ public class DishController {
     @ApiOperation("修改菜品")
     public Result<String> update(@RequestBody DishDTO dishDTO) {
         log.info("修改菜品：{}", dishDTO);
-        Dish dish = new Dish();
-        BeanUtils.copyProperties(dishDTO, dish);
-        dishService.updateById(dish);
+        dishService.update(dishDTO);
         return Result.success();
     }
 
@@ -95,7 +89,6 @@ public class DishController {
         BeanUtils.copyProperties(dishService.getById(id), dishVO);
         return Result.success(dishVO);
     }
-
 
     /**
      * 根据分类id查询菜品
@@ -116,24 +109,9 @@ public class DishController {
     @GetMapping("/page")
     @ApiOperation("菜品分页查询")
     public Result<PageResult> getByPage(DishPageQueryDTO dishPageQueryDTO) {
-        // 获取起始页码，每页页码数
-        IPage<Dish> page = new Page<>(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
-
-        // 获取name参数，type参数
-        String name = dishPageQueryDTO.getName();
-        Integer categoryId = dishPageQueryDTO.getCategoryId();
-        Integer status = dishPageQueryDTO.getStatus();
-        // 构建条件
-        LambdaQueryWrapper<Dish> lwq = new LambdaQueryWrapper<Dish>();
-        lwq.like(name != null, Dish::getName, name)
-                .eq(categoryId != null, Dish::getCategoryId, categoryId)
-                .eq(status != null, Dish::getStatus, status)
-                .orderByDesc(Dish::getUpdateTime);
-
-        IPage<Dish> iPage = dishService.page(page, lwq);
-        PageResult pageResult = new PageResult(iPage.getTotal(), iPage.getRecords());
-        return Result.success(pageResult);
+        log.info("分页查询：{}", dishPageQueryDTO);
+        PageResult page = dishService.getByPage(dishPageQueryDTO);
+        return Result.success(page);
     }
-
 
 }

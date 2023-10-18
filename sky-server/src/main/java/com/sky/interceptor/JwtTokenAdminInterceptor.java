@@ -42,7 +42,9 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        // TODO 这个jwt拦截器什么时候起作用？登录的时候请求头中并没有jwt令牌啊
+        // TODO 这个jwt拦截器什么时候起作用？登录的时候请求头中并没有jwt令牌啊？
+        // 有没有一种可能拦截器在拦截到请求登录Controller的请求时，发现登录Controller方法中存在创建令牌的代码，说明这个Controller是一开始创建令牌的，需要放行，不验证jwt令牌
+        // 请求其他Controller的请求，都会在进入Controller方法之前，被拦截器拦截。
         //1、从请求头中获取令牌
         String token = request.getHeader(jwtProperties.getAdminTokenName());
 

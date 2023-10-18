@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Builder  // @Builder注解的作用主要是用来生成对象，并且可以为对象链式赋值。
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("category")
 public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;

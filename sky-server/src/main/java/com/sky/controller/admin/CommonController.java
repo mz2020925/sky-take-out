@@ -29,7 +29,7 @@ public class CommonController {
     @PostMapping("/upload")
     @ApiOperation("文件上传")
     public Result<String> upload(MultipartFile file){
-        log.info("文件上：{}", file);
+        log.info("文件上传：{}", file);
         try{
             // 原始文件名
             String fileName = file.getOriginalFilename();
@@ -38,7 +38,7 @@ public class CommonController {
             // 根据业务设计，设置存储路径：按天创建目录
             String objectName = new SimpleDateFormat("yyyy-MM-dd/").format(new Date())
                     + UUID.randomUUID().toString()
-                    + fileName.substring(fileName.lastIndexOf("."));  // 截取原始文件名的后缀,构造新文件名称
+                    + fileName.substring(fileName.lastIndexOf("."));  // 截取原始文件名的后缀,构造新文件名称，新文件名称保证文件名唯一
 
             minIoService.upload(file);
             log.info("文件格式为：{}", file.getContentType());

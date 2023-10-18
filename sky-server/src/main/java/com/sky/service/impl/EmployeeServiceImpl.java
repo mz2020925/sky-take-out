@@ -88,7 +88,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 设置是谁（就是当前登录的管理员）创建和修改的该员工
 
 
-        // employee.setCreateUser(BaseContext.getCurrentId());  // TODO 后期需要修改记录创建人的id，
+        // employee.setCreateUser(BaseContext.getCurrentId());
         // employee.setUpdateUser(BaseContext.getCurrentId());  // 想要实现这个就需要了解前端和后端交互过程中的jwt认证相关知识，后端可以从前端穿过来的token中提取用户id
         // 调用持久层方法
         employeeMapper.insert(employee);
@@ -100,12 +100,12 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param employeePageQueryDTO
      * @return
      */
-    public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+    public PageResult getByPage(EmployeePageQueryDTO employeePageQueryDTO) {
         PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());  // 这行代码对后面有什么用呢？
         // MyBatis提供了一个插件pagehelper，这个插件底层是基于MyBatis的拦截器来编写的，说白了就是我们这个方法中用的mapper代理开发中的SQL语句都会被pagehelper处理，
         // 分页查询的SQL代码中没有加上 "limit 0,10" ，是因为上面那句代码就告诉了pagehelper插件，你后面在处理SQL代码的时候都追加上"limit getPage(),getPageSize()"
 
-        Page page = employeeMapper.pageQuery(employeePageQueryDTO);  // pagehelper这个插件要求查询的数据返回放在Page<>中，它继承了ArrayList
+        Page page = employeeMapper.getByPage(employeePageQueryDTO);  // pagehelper这个插件要求查询的数据返回放在Page<>中，它继承了ArrayList
         return new PageResult(page.getTotal(), page.getResult());
     }
 
