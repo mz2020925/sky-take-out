@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@Api("套餐相关接口")
+@Api(tags = "套餐相关接口")
 @RequestMapping("/admin/setmeal")
 @Slf4j
 public class SetmealController {
@@ -71,18 +71,10 @@ public class SetmealController {
 
     @GetMapping("/page")
     @ApiOperation("分页查询")
-    public Result<PageResult> getByPage(@RequestParam SetmealPageQueryDTO setmealPageQueryDTO){
+    public Result<PageResult> getByPage(SetmealPageQueryDTO setmealPageQueryDTO){
         log.info("分页查询：{}", setmealPageQueryDTO);
         PageResult pageResult = setmealService.getByPage(setmealPageQueryDTO);
         return Result.success(pageResult);
     }
-
-
-
-
-
-
-
-
 
 }

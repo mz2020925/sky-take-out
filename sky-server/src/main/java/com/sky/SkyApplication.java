@@ -1,13 +1,17 @@
 package com.sky;
 
 import lombok.extern.slf4j.Slf4j;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
-@EnableTransactionManagement //开启注解方式的事务管理
+@EnableTransactionManagement // 开启注解方式的事务管理,
+/*
+本项目的菜品管理中的 批量删除接口 对应的 DishServiceImpl中删除方法本来应该有@Transactional修饰，表示该方法是事务模式。
+为什么要给这个方法设置事务模式，因为这个方法中涉及多个表的操作，所以要改全部都改，要不改全都不改，不能因为中间出错导致有的表改了、有的表没改。
+一个ServiceImpl方法，只要设计多表操作，必须用事务模式。只对一个表操作不用事务模式。
+*/
 @Slf4j
 public class SkyApplication {
     public static void main(String[] args) {

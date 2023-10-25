@@ -138,6 +138,7 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql}</version>
             </dependency>
+            <!--下面三个都是以minio为核心实现文件上传下载，实现访问用minio搭建的存储服务器-->
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>

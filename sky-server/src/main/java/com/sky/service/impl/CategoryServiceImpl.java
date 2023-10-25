@@ -46,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
         // category.setUpdateTime(LocalDateTime.now());
         // category.setCreateUser(BaseContext.getCurrentId());
         // category.setUpdateUser(BaseContext.getCurrentId());
-        categoryMapper.insert(category);
+        categoryMapper.insertCategory(category);
     }
 
 
@@ -75,7 +75,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .id(id)
                 .status(status)
                 .build();
-        categoryMapper.updateById(category);
+        categoryMapper.updateCategory(category);
     }
 
     public void update(CategoryDTO categoryDTO) {
@@ -86,7 +86,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         // category.setUpdateTime(LocalDateTime.now());
         // category.setUpdateUser(BaseContext.getCurrentId());
-        categoryMapper.updateById(category);
+        categoryMapper.updateCategory(category);
     }
 
 

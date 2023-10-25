@@ -62,7 +62,7 @@ public class DishController {
     @PostMapping("/status/{status}")
     @ApiOperation("菜品起售、停售")
     public Result<String> startOrStop(@PathVariable Integer status, Long id) {
-        log.info("菜品起售停售：{}，菜品id{}", status, id);
+        log.info("菜品起售停售：{}，菜品：id{}", status, id);
         dishService.startOrStop(status, id);
         return Result.success();
     }
@@ -85,8 +85,8 @@ public class DishController {
     @ApiOperation("根据id查询菜品")
     public Result<DishVO> getById(@PathVariable Long id) {
         log.info("根据id查询菜品：{}", id);
-        DishVO dishVO = new DishVO();
-        BeanUtils.copyProperties(dishService.getById(id), dishVO);
+        DishVO dishVO = dishService.getById(id);
+        // System.out.println(dishVO);
         return Result.success(dishVO);
     }
 

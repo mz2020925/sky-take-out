@@ -13,11 +13,18 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface DishMapper extends BaseMapper<Dish> {
 
+
     @AutoFill(value = OperationType.INSERT)
-    int insert(Dish entity);
+    default void insertDish(Dish dish){
+        this.insert(dish);
+    }
+
+    // int insert(Dish dish);
 
     @AutoFill(value = OperationType.UPDATE)
-    int updateById(Dish entity);
+    default void updateDish(Dish dish){
+        this.updateById(dish);
+    }
 
     Page<DishVO> getByPage(DishPageQueryDTO dishPageQueryDTO);
 }

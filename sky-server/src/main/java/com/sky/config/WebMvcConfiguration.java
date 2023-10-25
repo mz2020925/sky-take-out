@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -57,17 +60,40 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      * @return
      */
     @Bean
-    public Docket docket() {
-        log.info("准备生成接口文档...");
+    public Docket docket1() {
+        log.info("开始生成Swagger管理端接口文档...");
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .title("苍穹外卖项目接口文档")
                 .version("2.0")
                 .description("苍穹外卖项目接口文档")
                 .build();
+
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
+                .groupName("管理端接口")
                 .apiInfo(apiInfo)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.sky.controller"))
+                //指定生成接口需要扫描的包
+                .apis(RequestHandlerSelectors.basePackage("com.sky.controller.admin"))
+                .paths(PathSelectors.any())
+                .build();
+        return docket;
+    }
+
+    @Bean
+    public Docket docket2() {
+        log.info("开始生成Swagger用户端接口文档...");
+        ApiInfo apiInfo = new ApiInfoBuilder()
+                .title("苍穹外卖项目接口文档")
+                .version("2.0")
+                .description("苍穹外卖项目接口文档")
+                .build();
+
+        Docket docket = new Docket(DocumentationType.SWAGGER_2)
+                .groupName("用户端接口")
+                .apiInfo(apiInfo)
+                .select()
+                //指定生成接口需要扫描的包
+                .apis(RequestHandlerSelectors.basePackage("com.sky.controller.user"))
                 .paths(PathSelectors.any())
                 .build();
         return docket;
@@ -109,7 +135,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      * @param converters
      */
     protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        log.info("开始扩展消息转换器");
+        log.info("开始扩展SpringMVC消息转换器，修正分页查询中的时间格式...");
         // 创建一个消息转换器对象
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         // 设置对象转换器，可以将java对象转换为json字符串
@@ -136,6 +162,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      */
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        log.info("开始创建MyBatis-Plus分页拦截器...");
         //1 创建MybatisPlusInterceptor拦截器对象
         MybatisPlusInterceptor mpInterceptor = new MybatisPlusInterceptor();
         //2 添加分页拦截器
@@ -146,14 +173,40 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     /**
      * 本项目中使用一项技术 MinIO ，来搭建 存储服务器
      * 本函数返回 存储服务器 的一个Client连接。就类似于建立 MySQL 的一个连接一样。
+     *
      * @return
      */
     @Bean
     public MinioClient minioClient() {
+        log.info("开始创建minio存储服务器的一个Client连接...");
         return MinioClient.builder()
                 .endpoint(minIoProperties.getEndpoint())
                 .credentials(minIoProperties.getAccessKey(), minIoProperties.getSecretKey())
                 .build();
     }
+
+    /**
+     * 本项目中使用到redis，通过Spring Data Redis来操作redis。
+     * 下面创建RedisTemplate对象，就是在使用Spring Data Redis
+     * 当前配置类不是必须的，因为 Spring Boot 框架会自动装配 RedisTemplate 对象，
+     * 但是默认的key序列化器为JdkSerializationRedisSerializer，导致我们存到Redis中后的数据和原始数据有差别，
+     * 故设置为StringRedisSerializer序列化器。
+     *
+     * @param redisConnectionFactory
+     * @return
+     */
+    @Bean
+    public RedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        // 这里redisConnectionFactory不用管，因为引入的spring-boot-starter-data-redis依赖会创建一个redisConnectionFactory
+        // 的Bean放入IOC容器中，我们不需要通过Autowired来注入
+        log.info("开始创建redis模板对象...");
+        RedisTemplate redisTemplate = new RedisTemplate();
+        //设置redis的连接工厂对象
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        //设置redis key的序列化器
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        return redisTemplate;
+    }
+
 
 }

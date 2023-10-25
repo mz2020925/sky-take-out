@@ -8,12 +8,14 @@ import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
+import com.sky.entity.Category;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
 import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
-import com.sky.mapper.FlavorMapper;
+import com.sky.mapper.CategoryMapper;
 import com.sky.mapper.DishMapper;
+import com.sky.mapper.FlavorMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
@@ -21,6 +23,7 @@ import com.sky.vo.DishVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +31,9 @@ import java.util.List;
 public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements DishService {
     @Autowired
     private DishMapper dishMapper;
+
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     @Autowired
     private FlavorMapper flavorMapper;
@@ -39,7 +45,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         // 新增菜品表
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
-        dishMapper.insert(dish);
+        dishMapper.insertDish(dish);
 
         // 新增口味表
         List<DishFlavor> flavors = dishDTO.getFlavors();
@@ -51,6 +57,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         }
     }
 
+    @Transactional  // 设置本方法是事务模式
     public void deleteByIds(List<Long> ids) {
         LambdaQueryWrapper<SetmealDish> lqw1 = new LambdaQueryWrapper<SetmealDish>();
         LambdaQueryWrapper<DishFlavor> lqw2 = new LambdaQueryWrapper<DishFlavor>();
@@ -70,7 +77,9 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
                 throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
             }
             lqw1.clear();
+        }
 
+        for (Long id : ids) {
             // 删除菜品表中的菜品数据
             // 删除菜品关联的口味表中的数据
             dishMapper.deleteById(id);
@@ -78,13 +87,15 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             flavorMapper.delete(lqw2);
             lqw2.clear();
         }
+
+
     }
 
     public void update(DishDTO dishDTO) {
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
         // 更新菜品表
-        dishMapper.updateById(dish);
+        dishMapper.updateDish(dish);
 
         // 删除原来关联的口味表的行数据，将这一次携带过来的口味数据插入到口味表中
         LambdaQueryWrapper<DishFlavor> lqw = new LambdaQueryWrapper<DishFlavor>();
@@ -106,7 +117,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
                 .status(status)
                 .id(id)
                 .build();
-        dishMapper.updateById(dish);
+        dishMapper.updateDish(dish);
     }
 
     public PageResult getByPage(DishPageQueryDTO dishPageQueryDTO) {
@@ -118,6 +129,24 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         return new PageResult(page.getTotal(), page.getResult());
     }
 
+    public DishVO getById(Long id) {
+        DishVO dishVO = new DishVO();
+        Dish dish = dishMapper.selectById(id);
 
+        // 设置DishVO的categoryName属性
+        LambdaQueryWrapper<Category> lqw1 = new LambdaQueryWrapper<>();
+        lqw1.eq(Category::getId, dish.getCategoryId())
+                .select(Category::getName);
+        String name = categoryMapper.selectOne(lqw1).getName();
+        dishVO.setCategoryName(name);
 
+        // 设置DishVO的flavors属性
+        LambdaQueryWrapper<DishFlavor> lqw2 = new LambdaQueryWrapper<>();
+        lqw2.eq(DishFlavor::getDishId, id);
+        List<DishFlavor> dishFlavors = flavorMapper.selectList(lqw2);
+        dishVO.setFlavors(dishFlavors);
+
+        BeanUtils.copyProperties(dish, dishVO);
+        return dishVO;
+    }
 }

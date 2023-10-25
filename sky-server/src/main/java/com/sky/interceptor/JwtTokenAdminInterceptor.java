@@ -38,12 +38,13 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
         // System.out.println("当前线程id："+Thread.currentThread().getId());  // 获取当前线程的id
         //判断当前拦截到的是Controller的方法还是其他资源
         if (!(handler instanceof HandlerMethod)) {
-            //当前拦截到的不是动态方法,就是Controller方法，直接放行
+            //当前拦截到的不是动态方法,动态方法就是Controller方法，直接放行
             return true;
         }
 
         // TODO 这个jwt拦截器什么时候起作用？登录的时候请求头中并没有jwt令牌啊？
-        // 有没有一种可能拦截器在拦截到请求登录Controller的请求时，发现登录Controller方法中存在创建令牌的代码，说明这个Controller是一开始创建令牌的，需要放行，不验证jwt令牌
+        // 因为在WebMvcConfiguration中自定义拦截器设置了 .excludePathPatterns("/admin/employee/login") ——将这个Conroller接口方法排除在外了
+        // 登录Controller方法中存在创建令牌的代码，这个Controller是一开始创建令牌的，需要放行，不验证jwt令牌
         // 请求其他Controller的请求，都会在进入Controller方法之前，被拦截器拦截。
         //1、从请求头中获取令牌
         String token = request.getHeader(jwtProperties.getAdminTokenName());

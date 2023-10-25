@@ -21,8 +21,12 @@ public interface CategoryMapper extends BaseMapper<Category> {
     // Category getByName(String name);
 
     @AutoFill(value = OperationType.INSERT)
-    int insert(Category entity);
+    default void insertCategory(Category category){
+        this.insert(category);
+    }
 
     @AutoFill(value = OperationType.UPDATE)
-    int updateById(Category entity);
+    default void updateCategory(Category category){
+        this.updateById(category);
+    }
 }
