@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -120,6 +121,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         dishMapper.updateDish(dish);
     }
 
+
     public PageResult getByPage(DishPageQueryDTO dishPageQueryDTO) {
 
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
@@ -148,5 +150,37 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
         BeanUtils.copyProperties(dish, dishVO);
         return dishVO;
+    }
+
+    public List<Dish> getByCategoryId(Long categoryId) {
+        LambdaQueryWrapper<Dish> lqw = new LambdaQueryWrapper<Dish>();
+        lqw.eq(Dish::getCategoryId, categoryId);
+        return dishMapper.selectList(lqw);
+    }
+
+    public List<DishVO> getDishVOByCategoryId(Long categoryId) {
+        // 根据categoryId查询菜品，不起售就不查了
+        LambdaQueryWrapper<Dish> lqw1 = new LambdaQueryWrapper<Dish>();
+        lqw1.eq(categoryId != null, Dish::getCategoryId, categoryId)
+                .eq(Dish::getStatus, StatusConstant.ENABLE);
+        List<Dish> dishes = dishMapper.selectList(lqw1);
+
+        // 创建dishVOs作为返回值
+        List<DishVO> dishVOs = new ArrayList<>();
+        LambdaQueryWrapper<DishFlavor> lqw2 = new LambdaQueryWrapper<>();
+        for (Dish dish : dishes) {
+            // 将dish的相同属性拷贝给dishVO
+            DishVO dishVO = new DishVO();
+            BeanUtils.copyProperties(dish, dishVO);
+
+            // 给dishVO的flavors赋值，得先查询当前dish的Flavor列表
+            Long id = dish.getId();
+            lqw2.eq(id != null, DishFlavor::getDishId, id);
+            List<DishFlavor> dishFlavors = flavorMapper.selectList(lqw2);
+            dishVO.setFlavors(dishFlavors);
+            dishVOs.add(dishVO);
+            lqw2.clear();
+        }
+        return dishVOs;
     }
 }

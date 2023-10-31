@@ -23,4 +23,7 @@ public interface DishService extends IService<Dish> {
 
     void startOrStop(Integer status, Long id);
 
+    List<DishVO> getDishVOByCategoryId(Long categoryId);
+
+    List<Dish> getByCategoryId(Long categoryId);
 }

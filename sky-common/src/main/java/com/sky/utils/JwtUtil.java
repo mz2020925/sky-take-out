@@ -31,7 +31,7 @@ public class JwtUtil {
                 // 如果有私有声明，一定要先设置这个自己创建的私有的声明，这个是给builder的claim赋值，一旦写在标准的声明赋值之后，就是覆盖了那些标准的声明的
                 .setClaims(claims)  // claims就是一个HashMap<String, Object>，存了一个键值对(JwtClaimsConstant.EMP_ID, employee.getId())
                 // 设置签名使用的签名算法和签名使用的秘钥
-                .signWith(signatureAlgorithm, secretKey.getBytes(StandardCharsets.UTF_8))  // secretKey的值：itcast
+                .signWith(signatureAlgorithm, secretKey.getBytes(StandardCharsets.UTF_8))  // secretKey的值：jwtProperties.getAdminSecretKey()
                 // 设置过期时间
                 .setExpiration(exp);  // 这里末尾没有.build()，因为在Jwts.builder()已经创建了一个对象，后面的链式编程是设置属性值的
 

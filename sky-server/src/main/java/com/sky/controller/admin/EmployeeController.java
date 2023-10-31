@@ -51,7 +51,7 @@ public class EmployeeController {
         // 登录成功后，生成jwt令牌。jwt令牌有什么用?JWT（JSON Web Token）是一种基于 JSON 格式的轻量级令牌（token）协议，它被广泛应用于网络应用程序的身份验证和授权。
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.EMP_ID, employee.getId());
-        String token = JwtUtil.createJWT(
+        String admin_token = JwtUtil.createJWT(
                 jwtProperties.getAdminSecretKey(),
                 jwtProperties.getAdminTtl(),
                 claims);  // jwt令牌是由三个信息编码而来的，存放到token变量中
@@ -60,7 +60,7 @@ public class EmployeeController {
                 .id(employee.getId())
                 .userName(employee.getUsername())
                 .name(employee.getName())
-                .token(token)
+                .token(admin_token)
                 .build();  // 把属性多的对象赋值给属性少的对象，不能用方法BeanUtils.copyProperties
 
         return Result.success(employeeLoginVO);  // 这也是链式编程属性赋值，这是登录请求的返回响应体

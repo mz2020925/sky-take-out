@@ -1,19 +1,21 @@
 sky:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    host: 218.194.47.148
+    host: 113.54.222.30
     port: 3306
     database: sky_take_out
     username: zmz
     password: Root_1234
   miniodev:
-    endpoint: http://218.194.47.148:9000 #Minio服务所在地址，可视化界面端口是9090
+    endpoint: http://113.54.222.30:9000 #Minio服务所在地址，可视化界面端口是9090
     bucketName: dishimages #存储桶名称
     accessKey: minioadmin #访问的key
     secretKey: minioadmin #访问的秘钥
   redis:
-    host: 218.194.47.148
+    host: 113.54.222.30
     port: 6379
     password:
     database: 0
-
+  wechat:
+    appid: wxec23ed4b12a678a6
+    secret: bf2c3033ed2b4edb77b280978d8c5979

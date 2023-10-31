@@ -1,7 +1,6 @@
 package com.sky.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -9,19 +8,23 @@ import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.entity.Dish;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
+import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,6 +34,9 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
 
     @Autowired
     private SetmealDishMapper setmealDishMapper;
+
+    @Autowired
+    private DishMapper dishMapper;
 
     public void save(SetmealDTO setmealDTO) {
         Setmeal setmeal = new Setmeal();
@@ -94,5 +100,53 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         Page<SetmealVO> page = setmealMapper.getByPage(setmealPageQueryDTO);
         return new PageResult(page.getTotal(), page.getResult());
 
+    }
+
+
+    /**
+     * 根据分类id查询套餐
+     *
+     * @param categoryId
+     * @return
+     */
+    public List<Setmeal> getByCategoryId(Long categoryId) {
+        LambdaQueryWrapper<Setmeal> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(categoryId != null, Setmeal::getCategoryId, categoryId)
+                .eq(Setmeal::getStatus, StatusConstant.ENABLE);
+        return setmealMapper.selectList(lqw);
+    }
+
+    /**
+     * 根据套餐id查询包含的菜品
+     *
+     * @param id
+     * @return
+     */
+    public List<DishItemVO> getDishesById(Long id) {
+
+
+        // 根据套餐id获取该套餐包含的菜品id列表
+        LambdaQueryWrapper<SetmealDish> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(SetmealDish::getSetmealId, id);
+        List<SetmealDish> setmealDishes = setmealDishMapper.selectList(lqw);
+
+        ArrayList<DishItemVO> dishItemVOs = new ArrayList<>();
+        for (SetmealDish setmealDish : setmealDishes) {
+            // 根据菜品id列表获取菜品
+            Dish dish = dishMapper.selectById(setmealDish.getDishId());
+
+            // 把菜品转化为DishItemVO对象
+            DishItemVO dishItemVO = DishItemVO.builder()
+                    .name(dish.getName())
+                    .image(dish.getImage())
+                    .description(dish.getDescription())
+                    .copies(setmealDish.getCopies())
+                    .build();
+
+            dishItemVOs.add(dishItemVO);
+        }
+
+
+        return dishItemVOs;
     }
 }

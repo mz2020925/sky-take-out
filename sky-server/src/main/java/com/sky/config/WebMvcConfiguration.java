@@ -3,6 +3,7 @@ package com.sky.config;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.sky.interceptor.JwtTokenAdminInterceptor;
+import com.sky.interceptor.JwtTokenUserInterceptor;
 import com.sky.json.JacksonObjectMapper;
 import com.sky.properties.MinIoProperties;
 import io.minio.MinioClient;
@@ -38,6 +39,9 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
 
     @Autowired
+    private JwtTokenUserInterceptor jwtTokenUserInterceptor;
+
+    @Autowired
     private MinIoProperties minIoProperties;
 
     /**
@@ -47,9 +51,14 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      */
     protected void addInterceptors(InterceptorRegistry registry) {
         log.info("开始注册自定义拦截器...");
+        // 添加了两个拦截器，这两个拦截器会拦截不同请求url的请求
         registry.addInterceptor(jwtTokenAdminInterceptor)
                 .addPathPatterns("/admin/**")
-                .excludePathPatterns("/admin/employee/login");
+                .excludePathPatterns("/admin/employee/login");  //
+        registry.addInterceptor(jwtTokenUserInterceptor)
+                .addPathPatterns("/user/**")
+                .excludePathPatterns("/user/user/login")  // 不拦截这个Controller方法
+                .excludePathPatterns("/user/shop/status");  // 不拦截这个Controller方法,为什么admin管理端不排除这个Controller方法，因为用户端是小程序，在登录之前就应该展示出店铺的登录状态。
     }
 
     /**
@@ -199,7 +208,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     public RedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         // 这里redisConnectionFactory不用管，因为引入的spring-boot-starter-data-redis依赖会创建一个redisConnectionFactory
         // 的Bean放入IOC容器中，我们不需要通过Autowired来注入
-        log.info("开始创建redis模板对象...");
+        log.info("开始创建Spring Data Redis模板对象...");
         RedisTemplate redisTemplate = new RedisTemplate();
         //设置redis的连接工厂对象
         redisTemplate.setConnectionFactory(redisConnectionFactory);

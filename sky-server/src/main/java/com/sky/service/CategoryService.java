@@ -16,7 +16,7 @@ public interface CategoryService {
 
     void update(CategoryDTO categoryDTO);
 
-    List getByType(Integer type);
+    List<Category> getByType(Integer type);
 
     PageResult getByPage(CategoryPageQueryDTO categoryPageQueryDTO);
 }

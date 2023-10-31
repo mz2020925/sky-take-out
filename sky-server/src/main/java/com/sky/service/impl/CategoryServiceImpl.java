@@ -90,9 +90,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
-    public List getByType(Integer type) {
+    public List<Category> getByType(Integer type) {
         LambdaQueryWrapper<Category> lqw = new LambdaQueryWrapper<Category>();
-        lqw.eq(Category::getType, type);
+        lqw.eq(type != null, Category::getType, type);  // 以后的SQL语句的条件最好用动态的
         return categoryMapper.selectList(lqw);
     }
 

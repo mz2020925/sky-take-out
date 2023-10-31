@@ -1,6 +1,5 @@
 package com.sky.controller.admin;
 
-import com.sky.dto.CategoryDTO;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.result.PageResult;
@@ -12,11 +11,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController("adminSetmealController")
 @Api(tags = "套餐相关接口")
 @RequestMapping("/admin/setmeal")
 @Slf4j
@@ -26,7 +26,8 @@ public class SetmealController {
 
     @PostMapping
     @ApiOperation("新增套餐")
-    public void save(@RequestBody SetmealDTO setmealDTO){
+    @CacheEvict(cacheNames = "setmealCache", key = "#setmealDTO.categoryId")  // 修改数据库之后，需要删除key对应的缓存数据
+    public void save(@RequestBody SetmealDTO setmealDTO) {
         log.info("新增套餐：{}", setmealDTO);
         setmealService.save(setmealDTO);
         Result.success();
@@ -35,7 +36,8 @@ public class SetmealController {
 
     @DeleteMapping
     @ApiOperation("批量删除套餐")
-    public void delete(@RequestParam List<Long> ids){
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)  // 删除setmealCache下的所有缓存
+    public void delete(@RequestParam List<Long> ids) {
         log.info("批量删除套餐：{}", ids);
         setmealService.deleteByIds(ids);
         Result.success();
@@ -44,16 +46,17 @@ public class SetmealController {
 
     @PutMapping
     @ApiOperation("修改套餐")
-    public void update(@RequestBody SetmealDTO setmealDTO){
-        log.info("修改套餐：{}",setmealDTO);
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)  // 删除setmealCache下的所有缓存
+    public void update(@RequestBody SetmealDTO setmealDTO) {
+        log.info("修改套餐：{}", setmealDTO);
         setmealService.update(setmealDTO);
         Result.success();
-
     }
 
     @PostMapping("/status/{status}")
     @ApiOperation("套餐起售、停售")
-    public void startOrStop(@PathVariable Integer status, @RequestParam Long id){
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)  // 删除setmealCache下的所有缓存
+    public void startOrStop(@PathVariable Integer status, @RequestParam Long id) {
         log.info("套餐起售、停售：{}，套餐id{}", status, id);
         setmealService.startOrStop(status, id);
         Result.success();
@@ -62,7 +65,7 @@ public class SetmealController {
 
     @GetMapping("/{id}")
     @ApiOperation("根据id查询")
-    public Result<SetmealVO> selectById(@PathVariable Long id){
+    public Result<SetmealVO> selectById(@PathVariable Long id) {
         log.info("根据id查询：{}", id);
         SetmealVO setmealVO = new SetmealVO();
         BeanUtils.copyProperties(setmealService.getById(id), setmealVO);
@@ -71,7 +74,7 @@ public class SetmealController {
 
     @GetMapping("/page")
     @ApiOperation("分页查询")
-    public Result<PageResult> getByPage(SetmealPageQueryDTO setmealPageQueryDTO){
+    public Result<PageResult> getByPage(SetmealPageQueryDTO setmealPageQueryDTO) {
         log.info("分页查询：{}", setmealPageQueryDTO);
         PageResult pageResult = setmealService.getByPage(setmealPageQueryDTO);
         return Result.success(pageResult);
