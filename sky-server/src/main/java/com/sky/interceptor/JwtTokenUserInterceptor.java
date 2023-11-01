@@ -54,7 +54,6 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
             Claims claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);  // 有了getAdminSecretKey()密钥才能解析token（这个变量里面存放着jwt令牌）
             // claims是一个HashMap<String, Object>，存了一个键值对(JwtClaimsConstant.EMP_ID, employee.getId())
             Long userId = Long.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
-            // log.info("当前用户{}", userId);
             BaseContext.setCurrentId(userId);
             //3、通过，放行
             return true;

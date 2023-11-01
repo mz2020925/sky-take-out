@@ -48,13 +48,10 @@ public class SetmealController {
     @GetMapping("/dish/{id}")
     // 如果这里设置缓存的话，应该是：键是setmealId，值是该setmealId下的菜品包装成Result<List>格式
     // 所以如果这里设置缓存菜品的话，那么菜品管理那里凡是涉及到菜品变化的操作都要将缓存清除
+    @Cacheable(value = "dishCache", key = "'setmealId'+#id")
     public Result<List> getDishesById(@PathVariable Long id) {
         List<DishItemVO> dishItemVOs = setmealService.getDishesById(id);
         return Result.success(dishItemVOs);
     }
-
-
-
-
 
 }

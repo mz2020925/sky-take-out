@@ -4,7 +4,7 @@ public class BaseContext {
 
     public static ThreadLocal<Long> threadLocal = new ThreadLocal<>();
 
-    public static void setCurrentId(Long id) {
+    public static void setCurrentId(Long id) {  // 为什么这个id就是用户id呢？
         threadLocal.set(id);
     }
 

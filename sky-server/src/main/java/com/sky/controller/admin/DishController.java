@@ -11,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,14 +37,15 @@ public class DishController {
      */
     @PostMapping
     @ApiOperation("新增菜品")
+    @CacheEvict(value = "dishCache", key = "'categoryId'+#dishDTO.categoryId")
     public Result<String> save(@RequestBody DishDTO dishDTO) {
         log.info("新增菜品：{}", dishDTO);
         // 新增菜品及后续操作
         dishService.saveWithFlavor(dishDTO);
 
         // 清理缓存
-        String key = "dish_"+dishDTO.getCategoryId();
-        cleanCache(key);
+        /*String key = "dish_"+dishDTO.getCategoryId();
+        cleanCache(key);*/
         return Result.success();
     }
 
@@ -54,6 +56,7 @@ public class DishController {
      */
     @DeleteMapping
     @ApiOperation("批量删除菜品")
+    @CacheEvict(value = "dishCache", allEntries = true)
     public Result<String> deleteByIds(@RequestParam List<Long> ids) {
         log.info("批量删除菜品：{}", ids);
         // 判断当前菜品是否能够删除---是否存在起售中的菜品？？
@@ -61,7 +64,7 @@ public class DishController {
 
         // 将所有的菜品缓存数据清理掉，因为我们无法直接根据ids具体找到批量删除的菜品，在用户端存储redis的时候，设置的键是"dish_"+category
         // 所有以dish_开头的key对应的键值对都要删除
-        cleanCache("dish_*");
+        // cleanCache("dish_*");
 
         return Result.success();
     }
@@ -71,12 +74,13 @@ public class DishController {
      */
     @PostMapping("/status/{status}")
     @ApiOperation("菜品起售、停售")
+    @CacheEvict(value = "dishCache", allEntries = true)
     public Result<String> startOrStop(@PathVariable Integer status, Long id) {
         log.info("菜品起售停售：{}，菜品：id{}", status, id);
         dishService.startOrStop(status, id);
 
         // 将所有的菜品缓存数据清理掉，无法直接根据函数参数 status, id 找到具体要清理的菜品
-        cleanCache("dish_*");
+        // cleanCache("dish_*");
         return Result.success();
     }
 
@@ -85,11 +89,12 @@ public class DishController {
      */
     @PutMapping
     @ApiOperation("修改菜品")
+    @CacheEvict(value = "dishCache", allEntries = true)
     public Result<String> update(@RequestBody DishDTO dishDTO) {
         log.info("修改菜品：{}", dishDTO);
         dishService.update(dishDTO);
         // 将所有的菜品缓存数据清理掉，无法直接根据 函数参数dishDTO 找到具体要清理的菜品
-        cleanCache("dish_*");
+        // cleanCache("dish_*");
         return Result.success();
     }
 
@@ -135,6 +140,5 @@ public class DishController {
         Set keys = redisTemplate.keys(pattern);
         redisTemplate.delete(keys);
     }
-
 
 }
