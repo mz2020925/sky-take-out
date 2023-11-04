@@ -33,7 +33,7 @@ public class UserController {
     @PostMapping("/login")
     @ApiOperation("用户登录")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
-        log.info("用户登录：{}", userLoginDTO);
+        log.info("C端-用户登录：{}", userLoginDTO);
         User user = userService.login(userLoginDTO);
         // 登陆成功后，后端输出jwt令牌返回给前端
 
@@ -50,5 +50,12 @@ public class UserController {
                 .build();
 
         return Result.success(userLoginVO);
+    }
+
+    @PostMapping("/logout")
+    @ApiOperation("退出登录")
+    public Result<String> logout(){
+        log.info("C端-用户退出登录：");
+        return Result.success();
     }
 }

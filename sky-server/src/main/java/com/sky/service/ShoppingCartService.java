@@ -7,9 +7,11 @@ import com.sky.entity.ShoppingCart;
 import java.util.List;
 
 public interface ShoppingCartService extends IService<ShoppingCart> {
-    void addShoppingCart(ShoppingCartDTO shoppingCartDTO);
+    void add(ShoppingCartDTO shoppingCartDTO);
 
-    List<ShoppingCart> showShoppingCart();
+    List<ShoppingCart> show();
 
-    void cleanShoppingCart();
+    void clean();
+
+    void sub(ShoppingCartDTO shoppingCartDTO);
 }

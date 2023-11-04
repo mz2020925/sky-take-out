@@ -24,17 +24,17 @@ public class SetmealController {
 
     /**
      * 根据分类id条件查询套餐
-     *
      * @param categoryId
      * @return
      */
     @ApiOperation("根据分类id查询套餐")
     @GetMapping("/list")
-    @Cacheable(cacheNames = "setmealCache", key = "#categoryId")
+    @Cacheable(cacheNames = "setmealCache", key = "'categoryId_'+#categoryId")
     // 1.在方法执行前，spring先查看缓存中是否有数据，如果有数据，则直接返回缓存数据；若没有数据，调用方法，并将方法返回值放到缓存中
     // 2.这里的返回值直接就是Result<List>格式的
-    // 3.这里缓存的是：键是categoryId，值是该categoryId下的套餐包装成Result<List>格式
+    // 3.这里缓存的是：键是categoryId，值是该categoryId下的套餐包装成Result<List<Setmeal>>格式
     public Result<List> getByCategoryId(@RequestParam Long categoryId) {
+        log.info("C端-根据分类id查询套餐：{}", categoryId);
         List<Setmeal> setmeals = setmealService.getByCategoryId(categoryId);
         return Result.success(setmeals);
     }
@@ -46,10 +46,11 @@ public class SetmealController {
      */
     @ApiOperation("根据套餐id查询包含的菜品")
     @GetMapping("/dish/{id}")
-    // 如果这里设置缓存的话，应该是：键是setmealId，值是该setmealId下的菜品包装成Result<List>格式
+    @Cacheable(cacheNames = "dishCache", key = "'setmealId_'+#id")
+    // 如果这里设置缓存的话，应该是：键是setmealId，值是该setmealId下的菜品包装成Result<List<DishItemVO>>格式
     // 所以如果这里设置缓存菜品的话，那么菜品管理那里凡是涉及到菜品变化的操作都要将缓存清除
-    @Cacheable(value = "dishCache", key = "'setmealId'+#id")
     public Result<List> getDishesById(@PathVariable Long id) {
+        log.info("C端-根据套餐id查询包含的菜品：{}", id);
         List<DishItemVO> dishItemVOs = setmealService.getDishesById(id);
         return Result.success(dishItemVOs);
     }

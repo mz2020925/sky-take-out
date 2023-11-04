@@ -29,12 +29,7 @@ public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, Sho
     @Autowired
     private SetmealMapper setmealMapper;
 
-    /**
-     * 添加购物车
-     *
-     * @param shoppingCartDTO
-     */
-    public void addShoppingCart(ShoppingCartDTO shoppingCartDTO) {
+    public void add(ShoppingCartDTO shoppingCartDTO) {
         Long dishId = shoppingCartDTO.getDishId();
         Long setmealId = shoppingCartDTO.getSetmealId();
         String dishFlavor = shoppingCartDTO.getDishFlavor();
@@ -57,11 +52,11 @@ public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, Sho
         List<ShoppingCart> shoppingCarts = shoppingCartMapper.selectList(lqw);
 
         // 判断购物车中该订单是否已经存在
-        if (shoppingCarts != null && shoppingCarts.size() == 1) {  // 已存在，修改这一行中的“数量”字段+1
+        if (shoppingCarts != null && shoppingCarts.size() > 0) {  // 已存在，修改这一行中的“数量”字段+1
             ShoppingCart shoppingCart1 = shoppingCarts.get(0);
             Integer number = shoppingCart1.getNumber();
             shoppingCart1.setNumber(number + 1);
-            shoppingCartMapper.update(shoppingCart1, lqw);
+            shoppingCartMapper.updateById(shoppingCart1);
         } else {  // 不存在这一行,难道不可能是 shoppingCarts.size() > 1 吗
             if (dishId != null) {
                 // 添加到购物车的是菜品
@@ -83,12 +78,7 @@ public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, Sho
         }
     }
 
-    /**
-     * 查看购物车
-     *
-     * @return
-     */
-    public List<ShoppingCart> showShoppingCart() {
+    public List<ShoppingCart> show() {
         LambdaQueryWrapper<ShoppingCart> lqw = new LambdaQueryWrapper<>();
         Long userId = BaseContext.getCurrentId();
         lqw.eq(userId != null, ShoppingCart::getUserId, userId);
@@ -96,10 +86,42 @@ public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, Sho
     }
 
 
-    public void cleanShoppingCart() {
+    public void clean() {
         LambdaQueryWrapper<ShoppingCart> lqw = new LambdaQueryWrapper<>();
         Long userId = BaseContext.getCurrentId();
         lqw.eq(userId != null, ShoppingCart::getUserId, userId);
         shoppingCartMapper.delete(lqw);
+    }
+
+
+    public void sub(ShoppingCartDTO shoppingCartDTO) {
+        Long dishId = shoppingCartDTO.getDishId();
+        Long setmealId = shoppingCartDTO.getSetmealId();
+        String dishFlavor = shoppingCartDTO.getDishFlavor();
+        Long userId = BaseContext.getCurrentId();
+
+        // 构建mysql数据库查询条件
+        LambdaQueryWrapper<ShoppingCart> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(dishId != null, ShoppingCart::getDishId, dishId)
+                .eq(setmealId != null, ShoppingCart::getSetmealId, setmealId)
+                .eq(dishFlavor != null, ShoppingCart::getDishFlavor, dishFlavor)
+                .eq(userId != null, ShoppingCart::getUserId, userId)
+                .orderByDesc(ShoppingCart::getCreateTime);
+
+        List<ShoppingCart> shoppingCarts = shoppingCartMapper.selectList(lqw);
+        // 判断购物车中该订单一定已经存在，下面就是number-1，或者删除这个订单
+        if(shoppingCarts != null && shoppingCarts.size() > 0) {
+            ShoppingCart shoppingCart1 = shoppingCarts.get(0);
+            Integer number = shoppingCart1.getNumber();
+            if (number == 1) {
+                // 当前商品在购物车中的份数为1，直接删除当前记录
+                shoppingCartMapper.deleteById(shoppingCart1);
+            } else {
+                // number > 1,当前商品在购物车中的份数不为1，修改 份数 - 1
+                shoppingCart1.setNumber(number - 1);
+                shoppingCartMapper.updateById(shoppingCart1);
+            }
+        }
+
     }
 }

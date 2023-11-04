@@ -26,7 +26,7 @@ public class SetmealController {
 
     @PostMapping
     @ApiOperation("新增套餐")
-    @CacheEvict(cacheNames = "setmealCache", key = "#setmealDTO.categoryId")  // 修改数据库之后，需要删除key对应的缓存数据
+    @CacheEvict(cacheNames = "setmealCache", key = "'categoryId_'+#setmealDTO.categoryId")  // 修改数据库之后，需要删除key对应的缓存数据
     public void save(@RequestBody SetmealDTO setmealDTO) {
         log.info("新增套餐：{}", setmealDTO);
         setmealService.save(setmealDTO);

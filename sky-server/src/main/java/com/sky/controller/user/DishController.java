@@ -30,8 +30,9 @@ public class DishController {
 
     @GetMapping("/list")
     @ApiOperation("根据分类id查询菜品")
-    @Cacheable(value = "dishCache", key = "'categoryId'+#categoryId")
+    @Cacheable(cacheNames = "dishCache", key = "'categoryId_'+#categoryId")
     public Result<List<DishVO>> getDishVOByCategoryId(@RequestParam Long categoryId) {
+        log.info("C端-根据分类id查询菜品：{}", categoryId);
         /*// 构造redis中的key，构造规则是dish_分类id，然后查询redis中是否存在 dish_分类id
         String key = "dish_" + categoryId;
         List<DishVO> list = (List<DishVO>) redisTemplate.opsForValue().get(key);  //TODO 这里是如何转换的？？？

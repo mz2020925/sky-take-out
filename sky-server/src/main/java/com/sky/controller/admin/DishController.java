@@ -37,7 +37,7 @@ public class DishController {
      */
     @PostMapping
     @ApiOperation("新增菜品")
-    @CacheEvict(value = "dishCache", key = "'categoryId'+#dishDTO.categoryId")
+    @CacheEvict(cacheNames = "dishCache", key = "'categoryId_'+#dishDTO.categoryId")
     public Result<String> save(@RequestBody DishDTO dishDTO) {
         log.info("新增菜品：{}", dishDTO);
         // 新增菜品及后续操作
@@ -56,7 +56,7 @@ public class DishController {
      */
     @DeleteMapping
     @ApiOperation("批量删除菜品")
-    @CacheEvict(value = "dishCache", allEntries = true)
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     public Result<String> deleteByIds(@RequestParam List<Long> ids) {
         log.info("批量删除菜品：{}", ids);
         // 判断当前菜品是否能够删除---是否存在起售中的菜品？？
@@ -74,9 +74,9 @@ public class DishController {
      */
     @PostMapping("/status/{status}")
     @ApiOperation("菜品起售、停售")
-    @CacheEvict(value = "dishCache", allEntries = true)
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     public Result<String> startOrStop(@PathVariable Integer status, Long id) {
-        log.info("菜品起售停售：{}，菜品：id{}", status, id);
+        log.info("菜品起售停售：{}，菜品id：{}", status, id);
         dishService.startOrStop(status, id);
 
         // 将所有的菜品缓存数据清理掉，无法直接根据函数参数 status, id 找到具体要清理的菜品
@@ -89,7 +89,7 @@ public class DishController {
      */
     @PutMapping
     @ApiOperation("修改菜品")
-    @CacheEvict(value = "dishCache", allEntries = true)
+    @CacheEvict(cacheNames = "dishCache", allEntries = true)
     public Result<String> update(@RequestBody DishDTO dishDTO) {
         log.info("修改菜品：{}", dishDTO);
         dishService.update(dishDTO);
@@ -133,7 +133,7 @@ public class DishController {
     }
 
     /**
-     * 清理redis缓存的方法
+     * 清理redis缓存的方法,不用这个，用Spring Cache
      * @param pattern
      */
     private void cleanCache(String pattern){
