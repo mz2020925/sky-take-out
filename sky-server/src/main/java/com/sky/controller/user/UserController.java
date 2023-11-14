@@ -35,8 +35,8 @@ public class UserController {
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
         log.info("C端-用户登录：{}", userLoginDTO);
         User user = userService.login(userLoginDTO);
-        // 登陆成功后，后端输出jwt令牌返回给前端
 
+        // 上面那行代码成功执行表示登陆成功，接下来，后端输出jwt令牌返回给前端
         HashMap<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.USER_ID, user.getId());
         String user_token = JwtUtil.createJWT(
