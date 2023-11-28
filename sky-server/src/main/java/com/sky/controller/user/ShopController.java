@@ -21,6 +21,10 @@ public class ShopController {
     @Autowired
     RedisTemplate redisTemplate;
 
+    /**
+     * 获取店铺的营业状态
+     * @return
+     */
     @GetMapping("/status")
     @ApiOperation("获取店铺的营业状态")
     public Result<Integer> getStatus() {

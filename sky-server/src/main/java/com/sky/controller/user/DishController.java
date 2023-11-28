@@ -28,6 +28,11 @@ public class DishController {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    /**
+     * 根据分类id查询菜品
+     * @param categoryId
+     * @return
+     */
     @GetMapping("/list")
     @ApiOperation("根据分类id查询菜品")
     @Cacheable(cacheNames = "dishCache", key = "'categoryId_'+#categoryId")

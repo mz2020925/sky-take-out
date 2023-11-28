@@ -1,21 +1,36 @@
 sky:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    host: 113.54.209.154
+    host: 113.54.199.219
     port: 3306
     database: sky_take_out
     username: zmz
     password: Root_1234
-  miniodev:
-    endpoint: http://113.54.209.154:9000 #Minio服务所在地址，可视化界面端口是9090
+  minio:
+    endpoint: http://113.54.199.219:9000 #Minio服务所在地址，可视化界面端口是9090
     bucketName: dishimages #存储桶名称
     accessKey: minioadmin #访问的key
     secretKey: minioadmin #访问的秘钥
   redis:
-    host: 113.54.209.154
+    host: 113.54.199.219
     port: 6379
     password:
     database: 0
   wechat:
     appid: wxec23ed4b12a678a6
     secret: bf2c3033ed2b4edb77b280978d8c5979
+
+    mchid : 1561414331
+    mchSerialNo: 4B3B3DC35414AD50B1B755BAF8DE9CC7CF407606
+    privateKeyFilePath: D:\apiclient_key.pem
+    apiV3Key: CZBK51236435wxpay435434323FFDuv3
+    weChatPayCertFilePath: D:\wechatpay_166D96F876F45C7D07CE98952A96EC980368ACFC.pem
+    notifyUrl: https://f1b45d5.r3.cpolar.top/notify/paySuccess  # 修改成商户系统进行公网穿透后的公网url
+    refundNotifyUrl: https://f1b45d5.r3.cpolar.top/notify/refundSuccess  # 修改成商户系统进行公网穿透后的公网url
+  baidu:
+    ak: ZmS1gDyko3McNABhkuQhruRzitWKycu8
+    shopAddress: 四川省成都市郫都区电子科技大学清水河校区研究院大楼
+    coordinateUrl: https://api.map.baidu.com/geocoding/v3?
+    distanceUrl: https://api.map.baidu.com/direction/v2/riding?
+
+

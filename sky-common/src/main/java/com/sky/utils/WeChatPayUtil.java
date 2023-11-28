@@ -35,10 +35,10 @@ import java.util.List;
 @Component
 public class WeChatPayUtil {
 
-    //微信支付下单接口地址
+    // 微信支付下单接口地址
     public static final String JSAPI = "https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi";
 
-    //申请退款接口地址
+    // 申请退款接口地址
     public static final String REFUNDS = "https://api.mch.weixin.qq.com/v3/refund/domestic/refunds";
 
     @Autowired
@@ -137,7 +137,7 @@ public class WeChatPayUtil {
         jsonObject.put("mchid", weChatProperties.getMchid());
         jsonObject.put("description", description);
         jsonObject.put("out_trade_no", orderNum);
-        jsonObject.put("notify_url", weChatProperties.getNotifyUrl());
+        jsonObject.put("notify_url", weChatProperties.getNotifyUrl());  // 在这里就已经把商户系统的url告诉微信后台了
 
         JSONObject amount = new JSONObject();
         amount.put("total", total.multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP).intValue());
@@ -164,13 +164,14 @@ public class WeChatPayUtil {
      * @return
      */
     public JSONObject pay(String orderNum, BigDecimal total, String description, String openid) throws Exception {
-        //统一下单，生成预支付交易单
+        // 统一下单，生成预支付交易单
+        // TODO 6.对应流程图的第6步，返回包含支付交易单的json字符串 —— 存入变量bodyAsString
         String bodyAsString = jsapi(orderNum, total, description, openid);
-        //解析返回结果
+        // 解析返回结果
         JSONObject jsonObject = JSON.parseObject(bodyAsString);
         System.out.println(jsonObject);
 
-        String prepayId = jsonObject.getString("prepay_id");
+        String prepayId = jsonObject.getString("prepay_id");  // 提取交易单，就是prepay_id作为key，它对应的值：一个字符串
         if (prepayId != null) {
             String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
             String nonceStr = RandomStringUtils.randomNumeric(32);
@@ -179,7 +180,8 @@ public class WeChatPayUtil {
             list.add(timeStamp);
             list.add(nonceStr);
             list.add("prepay_id=" + prepayId);
-            //二次签名，调起支付需要重新签名
+            // 二次签名，调起支付需要重新签名
+            // TODO 7.对应流程图的第7步，将组合数据再次签名
             StringBuilder stringBuilder = new StringBuilder();
             for (Object o : list) {
                 stringBuilder.append(o).append("\n");
@@ -192,7 +194,7 @@ public class WeChatPayUtil {
             signature.update(message);
             String packageSign = Base64.getEncoder().encodeToString(signature.sign());
 
-            //构造数据给微信小程序，用于调起微信支付
+            // 构造数据给微信小程序，用于调起微信支付，大致就是流程中的第7步
             JSONObject jo = new JSONObject();
             jo.put("timeStamp", timeStamp);
             jo.put("nonceStr", nonceStr);
@@ -200,7 +202,7 @@ public class WeChatPayUtil {
             jo.put("signType", "RSA");
             jo.put("paySign", packageSign);
 
-            return jo;
+            return jo;  // 待返回的《支付参数》已经封装到jo这个对象中了
         }
         return jsonObject;
     }

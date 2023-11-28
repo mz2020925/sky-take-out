@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "minio")
+@ConfigurationProperties(prefix = "sky.minio")
 @Data
 public class MinIoProperties {
     private String endpoint;

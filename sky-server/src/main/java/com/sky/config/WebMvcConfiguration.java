@@ -124,9 +124,9 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     /**
      * 扩展MVC框架的消息转换器：
-     * 由于分页查询中的时间格式不正确，所以有两种解决方案，这里是第二种，
+     * 由于分页查询中的时间格式不正确，所以有两种解决方案，这里是第二种
      * 在WebMvcConfiguration中扩展 SpringMVC的消息转换器，实现统一对日期类型进行格式化处理。
-     * 其实就是我们现在使用的是Spring MVC框架，这个框架本身有一个消息转换器，下载我们要扩展这个消息转换器，从而使它能够将返回的响应消息中的时间格式转换正确。
+     * 其实就是我们现在使用的是Spring MVC框架，这个框架本身有一个消息转换器，下面我们要扩展这个消息转换器，从而使它能够将返回的响应消息中的时间格式转换正确。
      * 什么是转换正确，就是后端返回给前端的json文本中时间格式应该是
      * "createTime": [
      * 2023-09-27 11:40:27
@@ -140,7 +140,8 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      * 9,
      * 30
      * ],
-     *
+     * 第一种方式，比如是在类OrdersPageQueryDTO的时间属性"private LocalDateTime beginTime;"上面加上注解：
+     * @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
      * @param converters
      */
     protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {

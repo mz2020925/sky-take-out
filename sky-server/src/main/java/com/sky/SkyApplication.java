@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
@@ -14,7 +15,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 一个ServiceImpl方法，只要设计多表操作，必须用事务模式。只对一个表操作不用事务模式。
 */
 @Slf4j
-@EnableCaching
+@EnableCaching  // 开启Spring Cache
+@EnableScheduling  // 开启Spring Task
 public class SkyApplication {
     public static void main(String[] args) {
         SpringApplication.run(SkyApplication.class, args);
@@ -22,5 +24,6 @@ public class SkyApplication {
         // 后端开发指导：https://yapi.pro/group/121400
         // 前端联调测试接口 http://localhost:80/  倍被nginx转接到 http://localhost:8080/admin/
         // 后端接口自己测试访问Swagger http://localhost:8080/doc.html
+        // Spring Task：corn表达式生成 https://cron.qqe2.com/
     }
 }

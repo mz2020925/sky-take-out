@@ -24,7 +24,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     /**
-     * 查询分类
+     * 根据分类类型查询分类
      * 这个用户端接口其实不会传递参数过来，也就是说type=null，这个时候就是查询所有分类
      * @param type
      * @return

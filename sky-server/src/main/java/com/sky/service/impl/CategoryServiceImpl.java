@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private SetmealMapper setmealMapper;
 
-    // TODO 我记得Spring中讲过创建Bean，分为创建一个Bean，和创建不同的Bean。复习一下！！！
+    // TODO 我记得Spring中讲过创建Bean，分为创建一个Bean共用，和创建不同的Bean各用各的。复习一下！！！
     @Autowired
     private DishMapper dishMapper;
 
