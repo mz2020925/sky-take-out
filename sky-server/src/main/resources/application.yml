@@ -59,6 +59,7 @@ sky:
     user-ttl: 604800000
     user-token-name: authentication
 
+  # 配置微信支付
   wechat:
     appid: ${sky.wechat.appid}
     secret: ${sky.wechat.secret}
@@ -70,11 +71,13 @@ sky:
     weChatPayCertFilePath: ${sky.wechat.weChatPayCertFilePath}
     notifyUrl: ${sky.wechat.notifyUrl}
     refundNotifyUrl: ${sky.wechat.refundNotifyUrl}
+  # 配置存储服务器
   minio:
     endpoint: ${sky.minio.endpoint}
     bucketName: ${sky.minio.bucketName}
     accessKey: ${sky.minio.accessKey}
     secretKey: ${sky.minio.secretKey}
+  # 配置百度地图
   baidu:
     ak: ${sky.baidu.ak}
     shopAddress: ${sky.baidu.shopAddress}

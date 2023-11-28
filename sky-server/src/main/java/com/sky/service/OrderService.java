@@ -51,7 +51,7 @@ public interface OrderService extends IService<Orders> {
      */
     OrderStatisticsVO statistics();
 
-    void confirm(Long id);
+    void confirm(OrdersConfirmDTO ordersConfirmDTO);
 
     void rejection(OrdersRejectionDTO ordersRejectionDTO) throws Exception;
 

@@ -51,6 +51,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     @Autowired
     private WeChatPayUtil weChatPayUtil;
 
+    @Autowired
+    private BaiduUtil baiduUtil;
+
     /**
      * 用户下单（提交订单）
      *
@@ -67,7 +70,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         // 异常情况的处理：收货地址为空
         AddressBook addressBook = addressBookMapper.getById(ordersSubmitDTO.getAddressBookId());  // 逻辑外键，address_book_id是收货地址表的id列
         if (addressBook == null) {
-            throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
+            throw new AddressBookBusinessException(MessageConstant.ORDER_ADDRESS_BOOK_IS_NULL);
         }
         // 异常情况的处理：超出配送范围
         checkOutOfRange(addressBook.getCityName()+addressBook.getDistrictName()+addressBook.getDetail());
@@ -350,7 +353,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         return new OrderStatisticsVO(toBeConfirmed, confirmed, deliveryInProgress);
     }
 
-    public void confirm(Long id) {
+    public void confirm(OrdersConfirmDTO ordersConfirmDTO) {
+        Long id = ordersConfirmDTO.getId();
         LambdaQueryWrapper<Orders> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Orders::getId, id);
         Orders orders = Orders.builder()
@@ -439,15 +443,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
      * @param address
      */
     public void checkOutOfRange(String address) throws Exception {
+        String shopAddress = baiduUtil.getBaiduProperties().getShopAddress();
         // 转换经纬度
-        String origin = BaiduUtil.getCoordinate(BaiduProperties.shopAddress);
-        String destination = BaiduUtil.getCoordinate(address);
+        String origin = baiduUtil.getCoordinate(shopAddress);
+        String destination = baiduUtil.getCoordinate(address);
         // 计算距离
-        Double distance = BaiduUtil.getDistance(origin, destination);
-        if (distance>5000) throw new OrderBusinessException(MessageConstant.OUT_OF_RANGE);
+        double distance = baiduUtil.getDistance(origin, destination);
+        if (distance>5000) throw new OrderBusinessException(MessageConstant.ORDER_OUT_OF_RANGE);  // 这个地方前端没有给弹窗提示，什么提示也没有。
     }
-
-
-
 }
 

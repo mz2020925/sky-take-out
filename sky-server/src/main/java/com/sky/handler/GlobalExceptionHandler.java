@@ -12,7 +12,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 /**
  * 全局异常处理器，处理项目中抛出的业务异常
  */
-// TODO 为什么全局异常处理器没有添加@Component注解
+// TODO 为什么全局异常处理器没有添加@Component注解，因为RestControllerAdvice继承了很多注解（包含@Component），相当于很多注解的合并
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -49,6 +49,5 @@ public class GlobalExceptionHandler {
         }else {
             return Result.error(MessageConstant.UNKNOWN_ERROR);
         }
-
     }
 }

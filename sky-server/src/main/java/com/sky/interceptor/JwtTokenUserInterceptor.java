@@ -50,16 +50,19 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
 
         // 2、校验令牌
         try {
-            log.info("用户端jwt校验: {}", token);
+            // log.info("用户端jwt校验: {}", token);
+            log.info("用户端jwt校验...");
             Claims claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);  // 有了getAdminSecretKey()密钥才能解析token（这个变量里面存放着jwt令牌）
             // claims是一个HashMap<String, Object>，存了一个键值对(JwtClaimsConstant.EMP_ID, employee.getId())
             Long userId = Long.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
             BaseContext.setCurrentId(userId);
             //3、通过，放行
+            log.info("用户端jwt校验通过");
             return true;
         } catch (Exception ex) {
             //4、不通过，响应401状态码
-            log.error("用户端jwt校验异常：{}", ex.toString());
+            // log.error("用户端jwt校验异常：{}", ex.toString());
+            log.error("用户端jwt校验异常");
             response.setStatus(401);
             return false;
         }
