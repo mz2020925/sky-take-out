@@ -96,6 +96,8 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
+        <!--为什么这里没有加上版本呢？因为这个pom.xml文件继承了com.sky的pom.xml文件，
+        而com.sky的pom.xml文件继承了spring-boot-starter-parent，它会自动选择兼容版本的，所以不用添加版本-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>

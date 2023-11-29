@@ -33,6 +33,8 @@ import java.util.List;
  */
 @Configuration
 @Slf4j
+// 如果用户自定义了WebMvcConfigurationSupport这个类，那么就MVC的自动配置就失效了，如果没有定义WebMvcConfigurationSupport，那么才会走MVC自动配置的。
+// 所以此时我们用了WebMvcConfigurationSupport，那么MVC的自动配置就失效了，因此访问静态资源全都失效，（包括webjars）,我们可以自己进行配置如下面的继承关系。
 public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     @Autowired
@@ -118,6 +120,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         log.info("开始设置静态资源映射...");
         registry.addResourceHandler("/doc.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+        registry.addResourceHandler("/websocket.html").addResourceLocations("classpath:/static/");  // classpath指的就是项目编译打包后的WEB-INF目录下的classes，包含src/main/下的java和resources这两个文件夹
         // 后端接口自己测试访问Swagger http://localhost:8080/doc.html
         // Swagger会自动的把接口文档页面资源放到"classpath:/META-INF/resources/" 和 "classpath:/META-INF/resources/webjars/"下面
     }

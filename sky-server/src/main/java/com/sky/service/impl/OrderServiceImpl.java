@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -22,14 +23,18 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.websocket.Session;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,6 +59,41 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     @Autowired
     private BaiduUtil baiduUtil;
 
+    @Autowired
+    private WebSocketServer webSocketServer;
+
+    /**
+     * 支付成功，修改订单状态
+     * 工具函数
+     * @param outTradeNo
+     */
+    public void paySuccess(String outTradeNo) {
+        // 当前登录用户id
+        Long userId = BaseContext.getCurrentId();
+
+        // 根据订单号查询当前用户的订单
+        Orders ordersDB = orderMapper.getByNumberAndUserId(outTradeNo, userId);
+
+        // 根据订单id更新订单的状态、支付方式、支付状态、结账时间
+        Orders orders = Orders.builder()
+                .id(ordersDB.getId())
+                .status(Orders.TO_BE_CONFIRMED)
+                .payStatus(Orders.PAID)
+                .checkoutTime(LocalDateTime.now())
+                .build();
+
+        orderMapper.updateOrders(orders);
+        //////////////////
+        Map map = new HashMap<>();
+        map.put("type", 1);  // 消息类型，1表示来单提醒
+        map.put("orderId", orders.getId());
+        map.put("content", "订单号："+outTradeNo);
+
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+        //////////////////
+    }
+
+
     /**
      * 用户下单（提交订单）
      *
@@ -63,9 +103,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
      */
     @Transactional
     public OrderSubmitVO submit(OrdersSubmitDTO ordersSubmitDTO) throws Exception {
-
-
-
         // 编写一个业务Controller都要首先判断是否抛出异常：这里是 收货地址为空、超出配送范围、购物车为空
         // 异常情况的处理：收货地址为空
         AddressBook addressBook = addressBookMapper.getById(ordersSubmitDTO.getAddressBookId());  // 逻辑外键，address_book_id是收货地址表的id列
@@ -156,29 +193,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         vo.setPackageStr(jsonObject.getString("package"));
 
         return vo;  // 这里返回的是第8步的支付参数
-    }
-
-    /**
-     * 支付成功，修改订单状态
-     *
-     * @param outTradeNo
-     */
-    public void paySuccess(String outTradeNo) {
-        // 当前登录用户id
-        Long userId = BaseContext.getCurrentId();
-
-        // 根据订单号查询当前用户的订单
-        Orders ordersDB = orderMapper.getByNumberAndUserId(outTradeNo, userId);
-
-        // 根据订单id更新订单的状态、支付方式、支付状态、结账时间
-        Orders orders = Orders.builder()
-                .id(ordersDB.getId())
-                .status(Orders.TO_BE_CONFIRMED)
-                .payStatus(Orders.PAID)
-                .checkoutTime(LocalDateTime.now())
-                .build();
-
-        orderMapper.updateOrders(orders);
     }
 
     /**
