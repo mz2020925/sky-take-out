@@ -36,4 +36,6 @@ public interface OrderMapper extends BaseMapper<Orders> {
     @Select("select COUNT(id) from orders where status= #{status}")
     Integer statistics(Integer status);
 
+    @Select("select number from orders where id=#{id}")
+    String getOutTradeNoById(Long id);
 }

@@ -312,8 +312,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         shoppingCartMapper.insertBatch(shoppingCartList);
     }
 
+    /**
+     * 用户催单
+     *
+     * @param id
+     */
     public void reminder(Long id) {
-
+        String number = orderMapper.getOutTradeNoById(id);
+        Map map = new HashMap<>();
+        map.put("type", 2);  // 2代表用户催单
+        map.put("orderId", id);
+        map.put("content", "订单号："+number);
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
     }
 
     public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
