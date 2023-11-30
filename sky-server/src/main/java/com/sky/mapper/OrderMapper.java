@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Map;
@@ -42,4 +43,9 @@ public interface OrderMapper extends BaseMapper<Orders> {
 
 
     Double turnover(Map map);
+
+
+    Double userStatistics(Map map);
+
+    Integer ordersStatistics(Map map);
 }
