@@ -357,7 +357,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
             List<String> orderDishesList = orderDetails.stream().map(x -> {
                 return x.getName() + "*" + x.getNumber() + ";";
             }).collect(Collectors.toList());
-            String orderDishes = String.join("", orderDishesList);
+            String orderDishes = String.join("", orderDishesList);  // String.join是用来拼接字符串列表的，不能把非字符串列表转换成字符串再拼接，那样要用到StringUtils.join
             orderVO.setOrderDishes(orderDishes);
             orderVOS.add(orderVO);
             lqw2.clear();

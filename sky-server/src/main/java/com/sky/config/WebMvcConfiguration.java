@@ -120,7 +120,8 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         log.info("开始设置静态资源映射...");
         registry.addResourceHandler("/doc.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
-        registry.addResourceHandler("/websocket.html").addResourceLocations("classpath:/static/");  // classpath指的就是项目编译打包后的WEB-INF目录下的classes，包含src/main/下的java和resources这两个文件夹
+        registry.addResourceHandler("/*.html").addResourceLocations("classpath:/static/");  // classpath指的就是项目编译打包后的WEB-INF目录下的classes，包含src/main/下的java和resources这两个文件夹
+        registry.addResourceHandler("/*.js").addResourceLocations("classpath:/static/");  // classpath指的就是项目编译打包后的WEB-INF目录下的classes，包含src/main/下的java和resources这两个文件夹
         // 后端接口自己测试访问Swagger http://localhost:8080/doc.html
         // Swagger会自动的把接口文档页面资源放到"classpath:/META-INF/resources/" 和 "classpath:/META-INF/resources/webjars/"下面
     }

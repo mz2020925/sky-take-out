@@ -35,5 +35,18 @@
         </set>
         where id = #{id}
     </update>
-
+    <select id="turnover" resultType="java.lang.Double">
+        select sum(amount) from orders
+        <where>
+            <if test="status!=null">
+                and status =#{status}
+            </if>
+            <if test="begin!=null">
+                and order_time &gt;= #{begin}
+            </if>
+            <if test="edn!=null">
+                and order_time &lt;= #{end}
+            </if>
+        </where>
+    </select>
 </mapper>

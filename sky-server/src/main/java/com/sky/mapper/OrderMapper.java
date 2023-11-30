@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Update;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Map;
 
 @Mapper
 public interface OrderMapper extends BaseMapper<Orders> {
@@ -38,4 +39,7 @@ public interface OrderMapper extends BaseMapper<Orders> {
 
     @Select("select number from orders where id=#{id}")
     String getOutTradeNoById(Long id);
+
+
+    Double turnover(Map map);
 }
