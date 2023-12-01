@@ -35,7 +35,7 @@
         </set>
         where id = #{id}
     </update>
-    <select id="turnover" resultType="java.lang.Double">
+    <select id="turnoverStatistics" resultType="java.lang.Double">
         select sum(amount) from orders
         <where>
             <if test="status!=null">
@@ -75,4 +75,30 @@
 
         </where>
     </select>
+    <select id="top10" resultType="com.sky.dto.GoodsSalesDTO">
+        <!--多表查询，聚合查询，取别名，动态SQL，分组查询，排序处理，分页查询-->
+        <!--当一个查询涉及到两张表的时候，你就应该想到多表查询，凡是涉及到多表查询一定会取别名-->
+        select od.name name,sum(od.number) number from order_detail od orders o where od.order_id=o.id and o.status=5
+        <!--这里取别名的用处应该是对应上GoodsSalesDTO的两个属性-->
+        <if test="begin!=null">
+            and o.order_time &gt;= #{begin}
+        </if>
+        <if test="end!=null">
+            and o.order_time &lt;= #{end}
+        </if>
+        group by name  <!--在这里对name进行了相同的放到一起，然后进行聚合查询，最后保留一条数据 name,number -->
+        order by number desc
+        limit 0, 10
+    </select>
+    <select id="overviewOrders" resultType="java.lang.Integer">
+        select count(id) from orders
+        <where>
+            <if test="status!=null">
+                and status=#{status}
+            </if>
+        </where>
+    </select>
 </mapper>
+
+
+

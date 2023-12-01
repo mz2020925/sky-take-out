@@ -8,6 +8,7 @@ import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 
 @Mapper
@@ -27,4 +28,7 @@ public interface DishMapper extends BaseMapper<Dish> {
     }
 
     Page<DishVO> getByPage(DishPageQueryDTO dishPageQueryDTO);
+
+    @Select("select count(id) from dish where status=#{status}")
+    Integer overviewDishes(Integer status);
 }

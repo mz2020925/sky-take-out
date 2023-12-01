@@ -29,4 +29,7 @@ public interface CategoryMapper extends BaseMapper<Category> {
     default void updateCategory(Category category){
         this.updateById(category);
     }
+
+    @Select("select count(id) from category where status=#{status}")
+    Integer overviewSetmeals(Integer status);
 }

@@ -1,6 +1,7 @@
 package com.sky.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.dto.OrdersCancelDTO;
 import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
@@ -10,6 +11,7 @@ import org.apache.ibatis.annotations.Update;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Map;
 
 @Mapper
@@ -42,10 +44,14 @@ public interface OrderMapper extends BaseMapper<Orders> {
     String getOutTradeNoById(Long id);
 
 
-    Double turnover(Map map);
+    Double turnoverStatistics(Map map);
 
 
     Double userStatistics(Map map);
 
     Integer ordersStatistics(Map map);
+
+    List<GoodsSalesDTO> top10(LocalDateTime beginTime, LocalDateTime endTime);
+
+    Integer overviewOrders(Integer status);
 }
