@@ -44,22 +44,12 @@
             <if test="begin!=null">
                 and order_time &gt;= #{begin}
             </if>
-            <if test="edn!=null">
+            <if test="end!=null">
                 and order_time &lt;= #{end}
             </if>
         </where>
     </select>
-    <select id="userStatistics" resultType="java.lang.Double">
-        select count(id) from user
-        <where>
-            <if test="begin!=null">
-                and creat_time &gt;=#{begin}
-            </if>
-            <if test="end!=null">
-                and creat_time &lt;=#{end}
-            </if>
-        </where>
-    </select>
+
     <select id="ordersStatistics" resultType="java.lang.Integer">
         select count(id) from orders
         <where>
@@ -70,7 +60,7 @@
                 and order_time &lt;=#{end}
             </if>
             <if test="status!=null">
-                and order_time =#{status}
+                and status =#{status}
             </if>
 
         </where>
@@ -78,7 +68,7 @@
     <select id="top10" resultType="com.sky.dto.GoodsSalesDTO">
         <!--多表查询，聚合查询，取别名，动态SQL，分组查询，排序处理，分页查询-->
         <!--当一个查询涉及到两张表的时候，你就应该想到多表查询，凡是涉及到多表查询一定会取别名-->
-        select od.name name,sum(od.number) number from order_detail od orders o where od.order_id=o.id and o.status=5
+        select od.name name,sum(od.number) number from order_detail od,orders o where od.order_id=o.id and o.status=5
         <!--这里取别名的用处应该是对应上GoodsSalesDTO的两个属性-->
         <if test="begin!=null">
             and o.order_time &gt;= #{begin}

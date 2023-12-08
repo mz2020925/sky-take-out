@@ -31,7 +31,6 @@ public class OrderTask {
                 .lt(Orders::getOrderTime, LocalDateTime.now().plusMinutes(-15));
         List<Orders> orders = orderMapper.selectList(lqw);
         if (orders != null && orders.size() > 0) {
-
             orders.forEach(x -> {
                 x.setStatus(Orders.CANCELLED);
                 x.setCancelTime(LocalDateTime.now());
@@ -49,13 +48,10 @@ public class OrderTask {
                 .lt(Orders::getOrderTime, LocalDateTime.now().plusMinutes(-60));  // 凌晨1点的时候查询昨天还有没有派送中的订单，如果有，就修改为已完成
         List<Orders> orders = orderMapper.selectList(lqw);
         if (orders != null && orders.size() > 0) {
-
             orders.forEach(x -> {
                 x.setStatus(Orders.COMPLETED);
                 orderMapper.updateById(x);
             });
         }
-
     }
-
 }

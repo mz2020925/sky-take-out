@@ -1,6 +1,5 @@
 package com.sky.service.impl;
 
-import com.sky.entity.Category;
 import com.sky.entity.Orders;
 import com.sky.mapper.CategoryMapper;
 import com.sky.mapper.DishMapper;
@@ -14,9 +13,7 @@ import com.sky.vo.SetmealOverViewVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +33,6 @@ public class WorkSpaceServiceImpl implements WorkSpaceService {
 
 
     public BusinessDataVO businessData(LocalDateTime begin, LocalDateTime end) {
-
         Integer newUsersCount = userMapper.newUsers(begin, end);
         Map map = new HashMap<>();
         map.put("begin", begin);
@@ -47,9 +43,16 @@ public class WorkSpaceServiceImpl implements WorkSpaceService {
         Integer validOrderCount = orderMapper.ordersStatistics(map);  // 有效订单数
         Double turnover = orderMapper.turnoverStatistics(map);  // 营业额
 
-        Double unitPrice = turnover / orderCount;  // 平均客单价
+        turnover = turnover == null ? 0.0 : turnover;
+        Double unitPrice = 0.0;
+        if (validOrderCount != 0) {
+            unitPrice = turnover / validOrderCount;  // 平均客单价
+        }
 
-        Double orderCompletionRate = validOrderCount.doubleValue() / orderCount * 100;  // 订单完成率
+        Double orderCompletionRate = 0.0;
+        if (orderCount != 0) {
+            orderCompletionRate = validOrderCount.doubleValue() / orderCount;  // 订单完成率
+        }
 
         return BusinessDataVO.builder()
                 .newUsers(newUsersCount)

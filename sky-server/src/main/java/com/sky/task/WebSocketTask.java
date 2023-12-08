@@ -14,7 +14,7 @@ public class WebSocketTask {
     @Autowired
     private WebSocketServer webSocketServer;
 
-    @Scheduled(cron = "0/5 * * * * ?")
+    // @Scheduled(cron = "0/5 * * * * ?")
     public void sendMessage() {
         webSocketServer.sendToAllClient("定时群发：这是来自服务端的消息。" + DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now()));
 

@@ -47,11 +47,11 @@ public interface OrderMapper extends BaseMapper<Orders> {
     Double turnoverStatistics(Map map);
 
 
-    Double userStatistics(Map map);
+
 
     Integer ordersStatistics(Map map);
 
-    List<GoodsSalesDTO> top10(LocalDateTime beginTime, LocalDateTime endTime);
+    List<GoodsSalesDTO> top10(LocalDateTime begin, LocalDateTime end);
 
     Integer overviewOrders(Integer status);
 }

@@ -1,5 +1,5 @@
 sky:
-  host: 211.83.103.225
+  host: 211.83.106.240
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     host: ${sky.host}

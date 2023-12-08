@@ -3,6 +3,7 @@ package com.sky.service.impl;
 import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
+import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.service.WorkSpaceService;
 import com.sky.vo.*;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -35,12 +37,17 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     private WorkSpaceService workSpaceService;
 
+    @Autowired
+    private UserMapper userMapper;
+
 
     public List<LocalDate> getLocalDateList(LocalDate begin, LocalDate end) {
         List<LocalDate> localDates = new ArrayList<>();
+        // 这个函数中需要把begin这一天和end这一天都包含进去
+        localDates.add(begin);
         while (!begin.equals(end)) {
-            localDates.add(begin);
             begin = begin.plusDays(1);  // 日期计算，获得指定日期后1天的日期
+            localDates.add(begin);
         }
 
         return localDates;
@@ -86,15 +93,16 @@ public class ReportServiceImpl implements ReportService {
             Map map = new HashMap<>();
             map.put("begin", null);
             map.put("end", endTime);
-            Double totalUse = orderMapper.userStatistics(map);
+            Double totalUse = userMapper.userStatistics(map);
             totalUserList.add(totalUse);
             map.put("begin", beginTime);
-            Double newUser = orderMapper.userStatistics(map);
+            Double newUser = userMapper.userStatistics(map);
             newUserList.add(newUser);
         }
 
         // 构建响应体中的data
         return UserReportVO.builder()
+                .dateList(StringUtils.join(localDates, ","))
                 .newUserList(StringUtils.join(newUserList, ","))
                 .totalUserList(StringUtils.join(totalUserList, ","))
                 .build();
@@ -110,7 +118,7 @@ public class ReportServiceImpl implements ReportService {
         // 按照一天天的方式查询新增用户列表，和总用户列表
         for (LocalDate localDate : localDates) {
             LocalDateTime beginTime = LocalDateTime.of(localDate, LocalTime.MIN);
-            LocalDateTime endTime = LocalDateTime.of(localDate, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(localDate, LocalTime.MAX);
 
             Map map = new HashMap<>();
             map.put("begin", beginTime);
@@ -126,7 +134,7 @@ public class ReportServiceImpl implements ReportService {
 
         Integer totalOrderCount = orderCountList.stream().reduce(0, (sub, item) -> sub + item);  // 订单总数
         Integer validOrderCount = validOrderCountList.stream().reduce(0, (sub, item) -> sub + item);  // 有效订单数
-        Double orderCompletionRate = null;  // 订单完成率
+        Double orderCompletionRate = 0.0;  // 订单完成率
         if (totalOrderCount != 0) {
             orderCompletionRate = validOrderCount.doubleValue() / totalOrderCount;
         }
@@ -157,43 +165,53 @@ public class ReportServiceImpl implements ReportService {
                 .build();
     }
 
-    public void export(HttpServletResponse response) throws IOException {
+    public void export(HttpServletResponse response) {
         LocalDate begin = LocalDate.now().minusDays(30);
         LocalDate end = LocalDate.now().minusDays(1);
         BusinessDataVO businessDataVO = workSpaceService.businessData(LocalDateTime.of(begin, LocalTime.MIN), LocalDateTime.of(end, LocalTime.MAX));
-        FileInputStream in = new FileInputStream(new File("classpath:/template/运营数据报表模板.xlsx"));
-        // 通过输入流读取指定的Excel文件
-        XSSFWorkbook excel = new XSSFWorkbook(in);
-        // 获取Excel文件的第1个Sheet页
-        XSSFSheet sheet = excel.getSheetAt(0);
-        XSSFRow row4 = sheet.getRow(3);  // 第4行（从0开始）
-        row4.getCell(2).setCellValue(businessDataVO.getTurnover());  // 营业额
-        row4.getCell(4).setCellValue(businessDataVO.getOrderCompletionRate());  // 订单完成率
-        row4.getCell(6).setCellValue(businessDataVO.getNewUsers());  // 订单完成率
-        XSSFRow row5 = sheet.getRow(4);
-        row5.getCell(2).setCellValue(businessDataVO.getValidOrderCount());  // 有效订单数
-        row5.getCell(4).setCellValue(businessDataVO.getUnitPrice());  // 平均客单价
+        try {
+            // String filePath = System.getProperty("user.dir") + "\\sky-server\\src\\main\\resources\\template\\运营数据报表模板.xlsx";
+            // String filePath = "E:\\coding_IntelliJIDEA\\sky-take-out\\sky-server\\src\\main\\resources\\template\\运营数据报表模板.xlsx";
+            // FileInputStream in = new FileInputStream(new File(filePath));
+            // InputStream in = this.getClass().getClassLoader().getResourceAsStream(filePath);
+            InputStream in = this.getClass().getClassLoader().getResourceAsStream("template/运营数据报表模板.xlsx");
+            // 通过输入流读取指定的Excel文件
+            XSSFWorkbook excel = new XSSFWorkbook(in);
+            // 获取Excel文件的第1个Sheet页
+            XSSFSheet sheet = excel.getSheetAt(0);
+            sheet.getRow(1).getCell(1).setCellValue(begin + "至" + end);
 
-        // 获取Sheet页中的最后一行的行号
-        for (int i = 7; i <= 36; i++) {
-            XSSFRow row = sheet.getRow(i);
-            row.getCell(1).setCellValue(String.valueOf(begin));
-            BusinessDataVO businessDataVO1 = workSpaceService.businessData(LocalDateTime.of(begin, LocalTime.MIN), LocalDateTime.of(begin, LocalTime.MAX));
-            row.getCell(2).setCellValue(businessDataVO1.getTurnover());
-            row.getCell(3).setCellValue(businessDataVO1.getValidOrderCount());
-            row.getCell(4).setCellValue(businessDataVO1.getOrderCompletionRate());
-            row.getCell(5).setCellValue(businessDataVO1.getUnitPrice());
-            row.getCell(6).setCellValue(businessDataVO1.getNewUsers());
-            begin = begin.plusDays(1);
+            XSSFRow row4 = sheet.getRow(3);  // 第4行（从0开始）
+            row4.getCell(2).setCellValue(businessDataVO.getTurnover());  // 营业额
+            row4.getCell(4).setCellValue(businessDataVO.getOrderCompletionRate());  // 订单完成率
+            row4.getCell(6).setCellValue(businessDataVO.getNewUsers());  // 订单完成率
+            XSSFRow row5 = sheet.getRow(4);
+            row5.getCell(2).setCellValue(businessDataVO.getValidOrderCount());  // 有效订单数
+            row5.getCell(4).setCellValue(businessDataVO.getUnitPrice());  // 平均客单价
+
+            // 获取Sheet页中的最后一行的行号
+            for (int i = 7; i <= 36; i++) {
+                XSSFRow row = sheet.getRow(i);
+                row.getCell(1).setCellValue(String.valueOf(begin));
+                BusinessDataVO businessDataVO1 = workSpaceService.businessData(LocalDateTime.of(begin, LocalTime.MIN), LocalDateTime.of(begin, LocalTime.MAX));
+                row.getCell(2).setCellValue(businessDataVO1.getTurnover());
+                row.getCell(3).setCellValue(businessDataVO1.getValidOrderCount());
+                row.getCell(4).setCellValue(businessDataVO1.getOrderCompletionRate());
+                row.getCell(5).setCellValue(businessDataVO1.getUnitPrice());
+                row.getCell(6).setCellValue(businessDataVO1.getNewUsers());
+                begin = begin.plusDays(1);
+            }
+
+            // 通过输出流将文件下载到客户端浏览器中
+            ServletOutputStream out = response.getOutputStream();
+            excel.write(out);
+            // 关闭资源
+            out.flush();
+            out.close();
+            excel.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        // 通过输出流将文件下载到客户端浏览器中
-        ServletOutputStream out = response.getOutputStream();
-        excel.write(out);
-        // 关闭资源
-        out.flush();
-        out.close();
-        excel.close();
 
     }
 }
