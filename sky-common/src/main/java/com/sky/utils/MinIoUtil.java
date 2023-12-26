@@ -234,11 +234,15 @@ public class MinIoUtil {
      * @param file 文件
      * @return Boolean
      */
-    public Boolean putObject(MultipartFile file) {
+    public Boolean putObject(MultipartFile file, String objectName) {
         try {
-            PutObjectArgs objectArgs = PutObjectArgs.builder().bucket(minIoProperties.getBucketName()).object(file.getOriginalFilename())
-                    .stream(file.getInputStream(),file.getSize(),-1).contentType(file.getContentType()).build();
-            //文件名称相同会覆盖
+            PutObjectArgs objectArgs = PutObjectArgs.builder()
+                    .bucket(minIoProperties.getBucketName())
+                    .object(objectName)
+                    .stream(file.getInputStream(),file.getSize(),-1)
+                    .contentType(file.getContentType())
+                    .build();
+            //文件名称相同会覆盖，修改后传进来的objectName不会重复
             minioClient.putObject(objectArgs);
         } catch (Exception e) {
             e.printStackTrace();

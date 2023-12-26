@@ -54,7 +54,7 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 // 拿着本地存的密钥去解析jwt，如果用本地的密钥解不开前端给的jwt，说明前端的这个请求有问题
                 // 如果解析成功，说明没有问题，把解析后的jwt的HashMap那部分返回，即getBody()
-                .getBody();
+                .getBody();  // 最后得到的解析结果的body是Claims对象
         return claims;
     }
 

@@ -27,7 +27,8 @@ public class AddressBookController {
     @ApiOperation("查询当前登录用户的所有地址信息")
     public Result<List<AddressBook>> list() {
         AddressBook addressBook = new AddressBook();
-        addressBook.setUserId(BaseContext.getCurrentId());
+        Long currentId = BaseContext.getCurrentId();
+        addressBook.setUserId(currentId);
         List<AddressBook> list = addressBookService.list(addressBook);
         return Result.success(list);
     }
@@ -100,7 +101,8 @@ public class AddressBookController {
         //SQL:select * from address_book where user_id = ? and is_default = 1
         AddressBook addressBook = new AddressBook();
         addressBook.setIsDefault(1);
-        addressBook.setUserId(BaseContext.getCurrentId());
+        Long currentId = BaseContext.getCurrentId();
+        addressBook.setUserId(currentId);
         List<AddressBook> list = addressBookService.list(addressBook);
 
         if (list != null && list.size() == 1) {

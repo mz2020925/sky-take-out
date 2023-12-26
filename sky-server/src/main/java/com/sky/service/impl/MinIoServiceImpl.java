@@ -29,8 +29,8 @@ public class MinIoServiceImpl implements MinIoService {
     }
 
 
-    public Boolean upload(MultipartFile multipartFile) {
-        return minIoUtil.putObject(multipartFile);
+    public Boolean upload(MultipartFile multipartFile, String objectName) {
+        return minIoUtil.putObject(multipartFile, objectName);
     }
 
 

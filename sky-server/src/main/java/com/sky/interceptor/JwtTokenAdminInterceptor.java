@@ -26,8 +26,8 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
     /**
      * 校验jwt
      * 注意：这个方法执行时间在请求到达Controller方法之前，也就是说所有“请求Controller”的请求都会被这个方法拦截。
-     * 但是登录操作，访问登录的Controller方法并没有被拦截，为什么呢？
-     * 在通过SWagger测试的时候，如果不先登录获取一个token（它是一个存储着jwt令牌的变量）然后把它放到请求头中，也是会响应401的
+     * 但是登录操作，访问登录的Controller方法并没有被拦截，为什么呢？因为在类WebMvcConfiguration注册这个拦截器的时候将登录接口排除在外，不拦截登录接口的请求。
+     * 在通过SWagger测试的时候，如果不先登录获取一个token（它是一个存储着jwt令牌的变量）然后把它放到请求头中，也是会响应401的。
      * @param request
      * @param response
      * @param handler
@@ -36,9 +36,9 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
      */
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // System.out.println("当前线程id："+Thread.currentThread().getId());  // 获取当前线程的id
-        //判断当前拦截到的是Controller的方法还是其他资源
+        // 判断当前拦截到的是Controller的方法还是其他资源
         if (!(handler instanceof HandlerMethod)) {
-            //当前拦截到的不是动态方法,动态方法就是Controller方法，直接放行
+            // 当前拦截到的不是动态方法,动态方法就是Controller方法，直接放行。这样就可以解决拦截器跨域问题 -- 跨域请求的时候会发送一个预请求，如果这个不这样写，会把预请求拦截了，后面的真实请求就发不出来。
             return true;
         }
 

@@ -8,9 +8,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * SQL语句公共字段自动填充
- */
+
+
 @Target({ElementType.METHOD})  // 表示自定义的这个注解修饰的是方法
 @Retention(RetentionPolicy.RUNTIME)  // @Retention注解用于指明修饰的注解的生存周期，即会保留到哪个阶段。就是这个自定义注解的生命周期，为什么这个注解在RUNTIME结束后就销毁呢？
 

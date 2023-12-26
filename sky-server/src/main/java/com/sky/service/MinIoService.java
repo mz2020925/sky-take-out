@@ -31,7 +31,7 @@ public interface MinIoService {
      * 文件上传
      * @return
      */
-    Boolean upload(MultipartFile multipartFile);
+    Boolean upload(MultipartFile multipartFile, String objectName);
     void upload(MultipartFile[] multipartFile);
 
     /**

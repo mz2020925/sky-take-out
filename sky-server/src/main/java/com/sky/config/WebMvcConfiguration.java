@@ -146,6 +146,8 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      * ],
      * 第一种方式，比如是在类OrdersPageQueryDTO的时间属性"private LocalDateTime beginTime;"上面加上注解：
      * @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+     *
+     * 为什么推荐第二种方式，因为第二种方式是扩展消息转换器，对时间属性的序列化、反序列化进行了配置（实现了统一配置）。
      * @param converters
      */
     protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {

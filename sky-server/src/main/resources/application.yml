@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   profiles:
@@ -20,8 +20,6 @@ spring:
     multipart:
       maxFileSize: 10MB
       maxRequestSize: 10MB
-
-
 
 mybatis:
   #mapper配置文件

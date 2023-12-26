@@ -30,9 +30,9 @@ public class AutoFillAspect {
 
     /**
      * 前置通知，在通知中进行公共字段的赋值 —— 看不懂？
-     * 通俗来讲就是把 所有方法 经过规则autoFillPointCut()的过滤后，送到方法autoFill(JoinPoint joinPoint)中执行反射操作。
+     * 通俗来讲就是把 所有方法 经过规则autoFillPointCut()的过滤后，送到方法autoFill(JoinPoint joinPoint)中执行反射操作，然后再执行方法本身，所以是@Before。
      * 对上面那句话进行概念解释：
-     * 在SpringAOP中，所有方法 称为JoinPoint；
+     * 在SpringAOP中，所有方法 都称为JoinPoint；
      * 规则autoFillPointCut()的过滤 称为Pointcut；对应注解是@Pointcut
      * 方法autoFill(JoinPoint joinPoint) 中的操作 称为advice；对应注解是@Before，@AfterReturning，@Around，@After，@AfterThrowing，参见：https://zhuanlan.zhihu.com/p/500555634
      * 上面三个合在一起 称为Aspect。对应注解是@Aspect
@@ -41,7 +41,7 @@ public class AutoFillAspect {
     public void autoFill(JoinPoint joinPoint){
         log.info("开始进行公共字段自动填充...");
         // 下面很多反射操作
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();  // 获取方法签名对象，joinPoint应该是一个Mapper类里的一个方法，例如Employee类中的update()、insert()
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();  // 获取方法签名对象，joinPoint是经过过滤的一个Mapper类里的一个方法（有注解@annotation(com.sky.annotation.AutoFill)修饰的），例如Employee类中的update()、insert()
         AutoFill autoFill = signature.getMethod().getAnnotation(AutoFill.class);  // 获得方法上的注解对象
         OperationType operationType = autoFill.value();  // 获得数据库操作类型,是insert还是update
 

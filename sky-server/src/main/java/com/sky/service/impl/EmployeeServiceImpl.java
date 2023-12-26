@@ -59,7 +59,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new AccountLockedException(MessageConstant.ACCOUNT_LOCKED);
             // 这里创建了一个AccountLockedException对象(通过它的带参构造方法)，它的构造方法又调用父类BaseException的带参构造方法，
             // 创建了一个BaseException对象，BaseException也有继承的父类，
-            // 也就是说这里抛出的异常对象有很多个，其中BaseException类型的异常会被hander包下的GlobalExceptionHandler类捕获
+            // 也就是说这里抛出的异常对象有很多个，其中BaseException类型的异常会被handler包下的GlobalExceptionHandler类捕获
         }
 
         //3、返回实体对象
@@ -101,6 +101,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @return
      */
     public PageResult getByPage(EmployeePageQueryDTO employeePageQueryDTO) {
+        // TODO 这里好像也没有配置文件在配置PageHelper，它怎么就起作用了呢
         PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());  // 这行代码对后面有什么用呢？
         // MyBatis提供了一个插件pagehelper，这个插件底层是基于MyBatis的拦截器来编写的，说白了就是我们这个方法中用的mapper代理开发中的SQL语句都会被pagehelper处理，
         // 分页查询的SQL代码中没有加上 "limit 0,10" ，是因为上面那句代码就告诉了pagehelper插件，你后面在处理SQL代码的时候都追加上"limit getPage(),getPageSize()"

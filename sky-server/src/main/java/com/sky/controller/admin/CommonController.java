@@ -36,11 +36,11 @@ public class CommonController {
             assert fileName != null;
 
             // 根据业务设计，设置存储路径：按天创建目录
-            String objectName = new SimpleDateFormat("yyyy-MM-dd/").format(new Date())
+            String objectName = new SimpleDateFormat("yyyy-MM-dd+").format(new Date())
                     + UUID.randomUUID().toString()
                     + fileName.substring(fileName.lastIndexOf("."));  // 截取原始文件名的后缀,构造新文件名称，新文件名称保证文件名唯一
 
-            minIoService.upload(file);
+            minIoService.upload(file, objectName);
             log.info("文件格式为：{}", file.getContentType());
             log.info("文件原名称为：{}", fileName);
             log.info("文件对象路径为：{}", objectName);
