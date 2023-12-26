@@ -21,8 +21,6 @@ spring:
       maxFileSize: 10MB
       maxRequestSize: 10MB
 
-
-
 mybatis:
   #mapper配置文件
   mapper-locations: classpath:mapper/*.xml
